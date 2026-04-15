@@ -332,7 +332,7 @@
         ```
         <body>
         <script>
-        $('body').load('https://testingcf.jsdelivr.net/gh/StageDog/tavern_helper_template/dist/角色卡名称/界面/状态栏/index.html')
+        $('body').load('https://testingcf.jsdelivr.net/gh/zhangjunsheng255-arch/123/dist/角色卡/末世幼化世界/界面/状态栏/index.html')
         </script>
         </body>
         ```
@@ -357,4 +357,4 @@
         启用: true
         类型: 脚本
         内容: |-
-          import 'https://testingcf.jsdelivr.net/gh/StageDog/tavern_helper_template/dist/角色卡名称/脚本/变量结构/index.js';
+          import 'https://testingcf.jsdelivr.net/gh/zhangjunsheng255-arch/123/dist/角色卡/末世幼化世界/脚本/变量结构/index.js';
