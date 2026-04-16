@@ -118,35 +118,27 @@ export const Schema = z.object({
     }).default({}),
     功能区域: z.object({
       核心休息区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       物资储藏区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       外围防御区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       农业种植区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       隔离繁育区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       医疗科研区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       能源中枢区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
       航空管制区: z.object({
-        等级: z.number().min(0).max(9).default(0),
         已解锁: z.boolean().default(false),
       }).default({}),
     }).default({}),

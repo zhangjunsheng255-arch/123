@@ -547,12 +547,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -563,12 +557,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -579,12 +567,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -595,12 +577,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -611,12 +587,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -627,12 +597,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -643,12 +607,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
@@ -659,12 +617,6 @@
               "default": {},
               "type": "object",
               "properties": {
-                "等级": {
-                  "default": 0,
-                  "type": "number",
-                  "minimum": 0,
-                  "maximum": 9
-                },
                 "已解锁": {
                   "default": false,
                   "type": "boolean"
