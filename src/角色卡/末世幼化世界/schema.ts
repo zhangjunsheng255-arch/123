@@ -168,7 +168,6 @@ export const Schema = z.object({
 
   // ========== NPC部分 ==========
   NPC列表: z.array(z.object({
-    ID: z.string(),
     人物姓名: z.string(),
     人物年龄: z.number(),
     人物穿着: z.string(),
@@ -179,18 +178,16 @@ export const Schema = z.object({
 
   // ========== 重要人物部分 ==========
   重要人物列表: z.array(z.object({
-    ID: z.string(),
     人物姓名: z.string(),
     人物年龄: z.number(),
     人物穿着: z.string(),
     人物等级: z.number().min(1).max(9),
     内心想法: z.string(),
-    好感度: z.number().transform(value => _.clamp(value, -100, 100)).default(0),
+    好感度: z.number().default(0),
   })).default([]),
 
   // ========== 在场人物 ==========
   在场人物: z.array(z.object({
-    ID: z.string(),
     人物姓名: z.string(),
     类型: z.enum(["主角", "重要人物", "NPC", "敌人", "中立"]),
   })).default([]),

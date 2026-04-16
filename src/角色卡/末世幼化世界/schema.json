@@ -757,9 +757,6 @@
       "items": {
         "type": "object",
         "properties": {
-          "ID": {
-            "type": "string"
-          },
           "人物姓名": {
             "type": "string"
           },
@@ -790,7 +787,6 @@
           }
         },
         "required": [
-          "ID",
           "人物姓名",
           "人物年龄",
           "人物穿着",
@@ -800,13 +796,11 @@
       }
     },
     "重要人物列表": {
+      "default": [],
       "type": "array",
       "items": {
         "type": "object",
         "properties": {
-          "ID": {
-            "type": "string"
-          },
           "人物姓名": {
             "type": "string"
           },
@@ -825,11 +819,11 @@
             "type": "string"
           },
           "好感度": {
+            "default": 0,
             "type": "number"
           }
         },
         "required": [
-          "ID",
           "人物姓名",
           "人物年龄",
           "人物穿着",
@@ -844,9 +838,6 @@
       "items": {
         "type": "object",
         "properties": {
-          "ID": {
-            "type": "string"
-          },
           "人物姓名": {
             "type": "string"
           },
@@ -862,7 +853,6 @@
           }
         },
         "required": [
-          "ID",
           "人物姓名",
           "类型"
         ]
