@@ -1,11 +1,11 @@
 ---
 alwaysApply: false
-description: 
+description:
 ---
 # EJS 提示词模板完整工作流指南
 
-> **适用环境：** SillyTavern + 提示词模板扩展（ST-Prompt-Template）  
-> **整理：** 秋青子  
+> **适用环境：** SillyTavern + 提示词模板扩展（ST-Prompt-Template）
+> **整理：** 秋青子
 > **更新日期：** 2026年3月4日
 
 ---
@@ -102,13 +102,13 @@ AI 只收到当前阶段的描述，就不会混淆两种状态。
 
 ### 标签类型
 
-| 标签 | 作用 | 说明 |
-| --- | --- | --- |
-| `<% 代码 %>` | 执行代码 | 不输出内容，可能产生空白行 |
-| `<%_ 代码 _%>` | 执行代码（推荐） | 不输出内容，自动去除空白 |
-| `<%= 表达式 %>` | 输出值 | HTML 转义后输出（渲染时格式化） |
-| `<%- 表达式 %>` | 输出值（原样） | 不转义，原样输出 HTML |
-| `<%# 注释 %>` | 注释 | 不会被处理 |
+| 标签            | 作用             | 说明                            |
+| --------------- | ---------------- | ------------------------------- |
+| `<% 代码 %>`    | 执行代码         | 不输出内容，可能产生空白行      |
+| `<%_ 代码 _%>`  | 执行代码（推荐） | 不输出内容，自动去除空白        |
+| `<%= 表达式 %>` | 输出值           | HTML 转义后输出（渲染时格式化） |
+| `<%- 表达式 %>` | 输出值（原样）   | 不转义，原样输出 HTML           |
+| `<%# 注释 %>`   | 注释             | 不会被处理                      |
 
 **推荐使用 `<%_ _%>` 执行代码，避免多余换行。**
 
@@ -411,13 +411,13 @@ _%>
 
 ### 变量作用域
 
-| 作用域 | 说明 | 持久化 | 使用场景 |
-| --- | --- | --- | --- |
-| `global` | 全局变量 | ✅ | 跨角色、跨对话共享 |
-| `local` | 聊天变量 | ✅ | 当前聊天记录 |
-| `message` | 消息变量 | ✅ | 绑定到具体消息 |
-| `cache` | 临时变量 | ❌ | 临时计算（默认） |
-| `initial` | 初始变量 | ❌ | 只读，来自 `[InitialVariables]` |
+| 作用域    | 说明     | 持久化 | 使用场景                        |
+| --------- | -------- | ------ | ------------------------------- |
+| `global`  | 全局变量 | ✅      | 跨角色、跨对话共享              |
+| `local`   | 聊天变量 | ✅      | 当前聊天记录                    |
+| `message` | 消息变量 | ✅      | 绑定到具体消息                  |
+| `cache`   | 临时变量 | ❌      | 临时计算（默认）                |
+| `initial` | 初始变量 | ❌      | 只读，来自 `[InitialVariables]` |
 
 优先级（高到低）：消息变量（从最新到最旧）→ 局部变量 → 全局变量
 
@@ -444,12 +444,12 @@ const value = getvar('stat_data.角色.好感度[0]');
 getvar(key, options)
 ```
 
-| 参数 | 说明 |
-| --- | --- |
-| `key` | 变量路径（字符串），null 获取整个变量树 |
-| `options.scope` | 指定作用域（`'global'`/`'local'`/`'message'`/`'cache'`/`'initial'`） |
-| `options.defaults` | 默认值（变量不存在时返回） |
-| `options.noCache` | 禁用缓存（用于读取刚设置的变量） |
+| 参数               | 说明                                                                 |
+| ------------------ | -------------------------------------------------------------------- |
+| `key`              | 变量路径（字符串），null 获取整个变量树                              |
+| `options.scope`    | 指定作用域（`'global'`/`'local'`/`'message'`/`'cache'`/`'initial'`） |
+| `options.defaults` | 默认值（变量不存在时返回）                                           |
+| `options.noCache`  | 禁用缓存（用于读取刚设置的变量）                                     |
 
 ```javascript
 /* 读取 MVU ZOD 变量 */
@@ -467,22 +467,22 @@ const name = getvar('用户名', { scope: 'local', defaults: '未知' });
 setvar(key, value, options)
 ```
 
-| 参数 | 说明 |
-| --- | --- |
-| `key` | 变量名，null 替换整个变量树 |
-| `value` | 变量值 |
-| `options.scope` | 作用域（默认 `'message'`） |
-| `options.flags` | 设置条件 |
+| 参数            | 说明                        |
+| --------------- | --------------------------- |
+| `key`           | 变量名，null 替换整个变量树 |
+| `value`         | 变量值                      |
+| `options.scope` | 作用域（默认 `'message'`）  |
+| `options.flags` | 设置条件                    |
 
 **flags 标志：**
 
-| 标志 | 说明 |
-| --- | --- |
-| `n` | 直接设置（默认） |
-| `nx` | 不存在时才设置（基于 cache） |
-| `xx` | 存在时才设置（基于 cache） |
+| 标志  | 说明                             |
+| ----- | -------------------------------- |
+| `n`   | 直接设置（默认）                 |
+| `nx`  | 不存在时才设置（基于 cache）     |
+| `xx`  | 存在时才设置（基于 cache）       |
 | `nxs` | 不存在时才设置（基于指定 scope） |
-| `xxs` | 存在时才设置（基于指定 scope） |
+| `xxs` | 存在时才设置（基于指定 scope）   |
 
 ```javascript
 /* 设置到 local 作用域 */
@@ -658,23 +658,23 @@ const allEntries = await getEnabledWorldInfoEntries();
 
 ### 可用装饰器
 
-| 装饰器 | 作用 |
-| --- | --- |
-| `@@activate` | 视为🔵永久激活条目 |
-| `@@dont_activate` | 完全禁止激活（即使 `activewi` 也不行） |
-| `@@generate_before` | 注入到发送给 LLM 的提示词开头 |
-| `@@generate_after` | 注入到发送给 LLM 的提示词末尾 |
-| `@@render_before` | 渲染到消息开头（不发送给 LLM） |
-| `@@render_after` | 渲染到消息末尾（不发送给 LLM） |
-| `@@preprocessing` | 在酒馆处理世界书**之前**执行（用于动态激活绿灯） |
-| `@@initial_variables` | 将内容视为初始变量 |
-| `@@always_enabled` | 强制启用特殊条目 |
-| `@@only_preload` | 只在立即加载阶段启用 |
-| `@@dont_preload` | 不在立即加载阶段处理 |
-| `@@private` | 自动包裹 `<% { %>` 和 `<% } %>`，避免变量重复声明 |
-| `@@if 条件` | 条件为 false 时排除此条目 |
-| `@@iframe` | 创建 iframe 包裹，避免样式污染 |
-| `@@message_formatting` | 输出为 HTML（仅限 RENDER 模式） |
+| 装饰器                 | 作用                                              |
+| ---------------------- | ------------------------------------------------- |
+| `@@activate`           | 视为🔵永久激活条目                                 |
+| `@@dont_activate`      | 完全禁止激活（即使 `activewi` 也不行）            |
+| `@@generate_before`    | 注入到发送给 LLM 的提示词开头                     |
+| `@@generate_after`     | 注入到发送给 LLM 的提示词末尾                     |
+| `@@render_before`      | 渲染到消息开头（不发送给 LLM）                    |
+| `@@render_after`       | 渲染到消息末尾（不发送给 LLM）                    |
+| `@@preprocessing`      | 在酒馆处理世界书**之前**执行（用于动态激活绿灯）  |
+| `@@initial_variables`  | 将内容视为初始变量                                |
+| `@@always_enabled`     | 强制启用特殊条目                                  |
+| `@@only_preload`       | 只在立即加载阶段启用                              |
+| `@@dont_preload`       | 不在立即加载阶段处理                              |
+| `@@private`            | 自动包裹 `<% { %>` 和 `<% } %>`，避免变量重复声明 |
+| `@@if 条件`            | 条件为 false 时排除此条目                         |
+| `@@iframe`             | 创建 iframe 包裹，避免样式污染                    |
+| `@@message_formatting` | 输出为 HTML（仅限 RENDER 模式）                   |
 
 ### @@preprocessing 实战
 
@@ -743,16 +743,16 @@ const allEntries = await getEnabledWorldInfoEntries();
 
 在世界书条目**标题（备忘）**中添加特殊前缀，将条目内容注入到指定位置：
 
-| 前缀 | 注入位置 | 说明 |
-| --- | --- | --- |
-| `[GENERATE:BEFORE]` | 发送给 LLM 的提示词开头 | 仅限🔵 |
-| `[GENERATE:AFTER]` | 发送给 LLM 的提示词末尾 | 🔵和🟢 |
-| `[RENDER:BEFORE]` | 接收的 LLM 输出开头 | 仅用于渲染 |
-| `[RENDER:AFTER]` | 接收的 LLM 输出末尾 | 仅用于渲染 |
-| `[GENERATE:{idx}:BEFORE]` | 第 idx 条消息的开头 | idx 从 0 开始 |
-| `[GENERATE:{idx}:AFTER]` | 第 idx 条消息的末尾 | idx 从 0 开始 |
-| `[GENERATE:REGEX:模式]` | 匹配消息内容时注入 | 正则匹配 |
-| `[InitialVariables]` | 初始变量 | 必须是标准 JSON |
+| 前缀                      | 注入位置                | 说明            |
+| ------------------------- | ----------------------- | --------------- |
+| `[GENERATE:BEFORE]`       | 发送给 LLM 的提示词开头 | 仅限🔵           |
+| `[GENERATE:AFTER]`        | 发送给 LLM 的提示词末尾 | 🔵和🟢            |
+| `[RENDER:BEFORE]`         | 接收的 LLM 输出开头     | 仅用于渲染      |
+| `[RENDER:AFTER]`          | 接收的 LLM 输出末尾     | 仅用于渲染      |
+| `[GENERATE:{idx}:BEFORE]` | 第 idx 条消息的开头     | idx 从 0 开始   |
+| `[GENERATE:{idx}:AFTER]`  | 第 idx 条消息的末尾     | idx 从 0 开始   |
+| `[GENERATE:REGEX:模式]`   | 匹配消息内容时注入      | 正则匹配        |
+| `[InitialVariables]`      | 初始变量                | 必须是标准 JSON |
 
 `[RENDER:BEFORE]` 和 `[RENDER:AFTER]` 仅用于渲染，不会发送到 LLM。
 
@@ -760,7 +760,7 @@ const allEntries = await getEnabledWorldInfoEntries();
 
 ```
 世界书条目标题: [GENERATE:REGEX:你好]
-世界书条目内容: 
+世界书条目内容:
 检测到问候语！当前消息: <%- matched_message %>
 消息索引: <%- matched_message_index %>
 ```
@@ -808,12 +808,12 @@ const allEntries = await getEnabledWorldInfoEntries();
 
 不同 API 对消息格式有不同要求：
 
-| API | 格式要求 |
-| --- | --- |
-| ChatGPT | system 通常放最前面一条，不要求严格交替 |
-| Gemini | 独立 systemInstruction，user/model 严格交替 |
-| Claude | user/assistant 严格交替，system 可在任何位置 |
-| Deepseek | user/assistant 建议交替，最后必须是 user |
+| API      | 格式要求                                     |
+| -------- | -------------------------------------------- |
+| ChatGPT  | system 通常放最前面一条，不要求严格交替      |
+| Gemini   | 独立 systemInstruction，user/model 严格交替  |
+| Claude   | user/assistant 严格交替，system 可在任何位置 |
+| Deepseek | user/assistant 建议交替，最后必须是 user     |
 
 **⚠️ 请保证 system 消息在开头！**
 
@@ -970,12 +970,12 @@ _%>
 
 ### 条目配置
 
-| 条目类型 | 激活方式 | 顺序 |
-| --- | --- | --- |
-| 控制器（有 getwi/activewi） | 蓝灯永久激活 | 100 |
-| 被加载的阶段条目 | 禁用 | 98-800 |
-| 动态关键词控制器（@@preprocessing） | 蓝灯永久激活 | 100 |
-| 被关键词激活的条目 | 绿灯 | 根据需求 |
+| 条目类型                            | 激活方式     | 顺序     |
+| ----------------------------------- | ------------ | -------- |
+| 控制器（有 getwi/activewi）         | 蓝灯永久激活 | 100      |
+| 被加载的阶段条目                    | 禁用         | 98-800   |
+| 动态关键词控制器（@@preprocessing） | 蓝灯永久激活 | 100      |
+| 被关键词激活的条目                  | 绿灯         | 根据需求 |
 
 ### 防重复声明
 
@@ -1184,5 +1184,5 @@ if (typeof value === 'undefined') var value = getvar('stat_data.角色.属性', 
 
 ---
 
-**整理者：秋青子**  
+**整理者：秋青子**
 适用场景：SillyTavern + 提示词模板扩展
