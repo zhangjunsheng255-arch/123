@@ -22,7 +22,7 @@
           <div class="glow"></div>
           <div class="curve"></div>
 
-          <div class="boot" :class="{ hide: !showBoot }" id="boot">
+          <div id="boot" class="boot" :class="{ hide: !showBoot }">
             <div class="boot-logo">▼▼▼</div>
             <div class="boot-t">ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</div>
             <div class="boot-t">LOADING PIP-BOY 3000 OS...</div>
@@ -35,22 +35,17 @@
                 <label>HP</label>
                 <div class="bar-wrap">
                   <div
+                    id="hp"
                     class="bar"
                     :style="{
                       width:
-                        Math.min(
-                          ((stat_data?.主角?.当前状态?.生命值 || 0) / (stat_data?.主角?.当前状态?.最大生命值 || 1)) *
-                            100,
-                          100,
-                        ) + '%',
+                        Math.min(((stat_data?.主角?.HP?.当前 || 0) / (stat_data?.主角?.HP?.上限 || 1)) * 100, 100) +
+                        '%',
                     }"
-                    id="hp"
                   ></div>
-                  <div class="segs"><div class="seg" v-for="i in 10" :key="i"></div></div>
+                  <div class="segs"><div v-for="i in 10" :key="i" class="seg"></div></div>
                 </div>
-                <span class="val"
-                  >{{ stat_data?.主角?.当前状态?.生命值 || 0 }}/{{ stat_data?.主角?.当前状态?.最大生命值 || 0 }}</span
-                >
+                <span class="val">{{ stat_data?.主角?.HP?.当前 || 0 }}/{{ stat_data?.主角?.HP?.上限 || 0 }}</span>
               </div>
               <div class="stat">
                 <label>AP</label>
@@ -59,37 +54,32 @@
                     class="bar"
                     :style="{
                       width:
-                        Math.min(
-                          ((stat_data?.主角?.当前状态?.行动点数 || 0) /
-                            (stat_data?.主角?.当前状态?.最大行动点数 || 1)) *
-                            100,
-                          100,
-                        ) + '%',
+                        Math.min(((stat_data?.主角?.AP?.当前 || 0) / (stat_data?.主角?.AP?.上限 || 1)) * 100, 100) +
+                        '%',
                     }"
                   ></div>
-                  <div class="segs"><div class="seg" v-for="i in 10" :key="i"></div></div>
+                  <div class="segs"><div v-for="i in 10" :key="i" class="seg"></div></div>
                 </div>
-                <span class="val"
-                  >{{ stat_data?.主角?.当前状态?.行动点数 || 0 }}/{{
-                    stat_data?.主角?.当前状态?.最大行动点数 || 0
-                  }}</span
-                >
+                <span class="val">{{ stat_data?.主角?.AP?.当前 || 0 }}/{{ stat_data?.主角?.AP?.上限 || 0 }}</span>
               </div>
             </div>
             <div class="status-c">
               <div class="stat">
-                <label>LEVEL</label><span class="val">{{ stat_data?.主角?.等级 || 1 }}</span>
+                <label>LEVEL</label><span class="val">{{ stat_data?.主角?.当前等级 || 1 }}</span>
               </div>
               <div class="stat">
-                <label>位置</label><span class="val">{{ stat_data?.世界?.当前地点 || '未知' }}</span>
+                <label>位置</label><span class="val">{{ stat_data?.世界?.当前位置?.具体地点 || '未知' }}</span>
               </div>
             </div>
             <div class="status-r">
               <div class="stat">
-                <label>CAPS</label><span class="val">{{ stat_data?.主角?.瓶盖 || 0 }}</span>
+                <label>CAPS</label><span class="val">{{ stat_data?.主角?.晶核数量 || 0 }}</span>
               </div>
               <div class="info-item">
-                <label>负重</label><span>{{ currentWeight }}/{{ stat_data?.主角?.最大负重 || 0 }}</span>
+                <label>负重</label
+                ><span
+                  >{{ currentWeight }}/{{ stat_data?.状态?.属性点?.力量 ? stat_data.状态.属性点.力量 * 10 : 0 }}</span
+                >
               </div>
             </div>
           </div>
@@ -137,7 +127,7 @@
 
             <div class="center">
               <!-- Status Page -->
-              <div class="page" :class="{ active: currentMenu === 'status' }" id="p-status">
+              <div id="p-status" class="page" :class="{ active: currentMenu === 'status' }">
                 <div class="tabs">
                   <div class="tab" :class="{ active: statusTab === 'special' }" @click="statusTab = 'special'">
                     SPECIAL
@@ -146,12 +136,12 @@
                   <div class="tab" :class="{ active: statusTab === 'perks' }" @click="statusTab = 'perks'">PERK</div>
                 </div>
                 <div class="scrollable">
-                  <div class="stat-content" v-show="statusTab === 'special'">
-                    <div class="special" v-if="stat_data?.主角?.SPECIAL属性">
+                  <div v-show="statusTab === 'special'" class="stat-content">
+                    <div v-if="stat_data?.状态?.属性点" class="special">
                       <div
-                        class="spec-item"
-                        v-for="(val, key) in stat_data.主角.SPECIAL属性"
+                        v-for="(val, key) in stat_data.状态.属性点"
                         :key="key"
+                        class="spec-item"
                         :class="{ selected: selectedSpecial === key }"
                         @click="selectedSpecial = key"
                       >
@@ -166,48 +156,48 @@
                       </div>
                     </div>
                   </div>
-                  <div class="stat-content" v-show="statusTab === 'skills'">
-                    <template v-if="stat_data?.主角?.技能">
+                  <div v-show="statusTab === 'skills'" class="stat-content">
+                    <template v-if="stat_data?.状态?.技能">
                       <div
-                        class="expandable"
-                        v-for="(skill, name) in stat_data.主角.技能"
+                        v-for="(skill, name) in stat_data.状态.技能"
                         :key="name"
+                        class="expandable"
                         :class="{ selected: expandedItem === 'skill_' + name }"
                         @click="toggleExpand('skill_' + name)"
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ skill.等级 }}</span>
+                          <span class="exp-meta">{{ (skill as any).等级 || '1' }}</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
                               <div class="exp-desc">{{ skill.描述 }}</div>
-                              <div class="exp-effects" v-if="skill.效果">{{ skill.效果 }}</div>
+                              <div v-if="skill.效果" class="exp-effects">{{ skill.效果 }}</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </template>
                   </div>
-                  <div class="stat-content" v-show="statusTab === 'perks'">
-                    <template v-if="stat_data?.主角?.Perks">
+                  <div v-show="statusTab === 'perks'" class="stat-content">
+                    <template v-if="stat_data?.状态?.专长">
                       <div
-                        class="expandable"
-                        v-for="(perk, name) in stat_data.主角.Perks"
+                        v-for="(perk, name) in stat_data.状态.专长"
                         :key="name"
+                        class="expandable"
                         :class="{ selected: expandedItem === 'perk_' + name }"
                         @click="toggleExpand('perk_' + name)"
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">Rank {{ perk.Rank || 1 }}</span>
+                          <span class="exp-meta">Rank {{ (perk as any).Rank || 1 }}</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
                               <div class="exp-desc">{{ perk.描述 }}</div>
-                              <div class="exp-effects" v-if="perk.效果">{{ perk.效果 }}</div>
+                              <div v-if="(perk as any).效果" class="exp-effects">{{ (perk as any).效果 }}</div>
                             </div>
                           </div>
                         </div>
@@ -218,7 +208,7 @@
               </div>
 
               <!-- Inventory Page -->
-              <div class="page" :class="{ active: currentMenu === 'inv' }" id="p-inv">
+              <div id="p-inv" class="page" :class="{ active: currentMenu === 'inv' }">
                 <div class="tabs">
                   <div class="tab" :class="{ active: invTab === 'weapons' }" @click="invTab = 'weapons'">武器</div>
                   <div class="tab" :class="{ active: invTab === 'apparel' }" @click="invTab = 'apparel'">服装</div>
@@ -226,89 +216,89 @@
                   <div class="tab" :class="{ active: invTab === 'misc' }" @click="invTab = 'misc'">杂物</div>
                 </div>
                 <div class="scrollable">
-                  <div class="inv-section" v-show="invTab === 'weapons'">
+                  <div v-show="invTab === 'weapons'" class="inv-section">
                     <div
-                      class="expandable"
-                      v-for="(item, name) in filterItems('武器')"
+                      v-for="(item, name) in stat_data?.背包?.武器 || {}"
                       :key="name"
+                      class="expandable"
                       :class="{ selected: expandedItem === 'inv_' + name }"
                       @click="toggleExpand('inv_' + name)"
                     >
                       <div class="exp-header">
                         <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
                         <span class="exp-meta">
-                          <span v-if="item.伤害">dmg {{ item.伤害 }}</span>
-                          <span>{{ item.重量 }}</span>
-                          <span>{{ item.价值 }}</span>
+                          <span v-if="(item as any).伤害">dmg {{ (item as any).伤害 }}</span>
+                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
+                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
                         </span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
                             <div class="exp-desc">{{ item.描述 }}</div>
-                            <div class="exp-effects" v-if="item.效果">{{ item.效果 }}</div>
+                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="inv-section" v-show="invTab === 'apparel'">
+                  <div v-show="invTab === 'apparel'" class="inv-section">
                     <div
-                      class="expandable"
-                      v-for="(item, name) in filterItems('服装')"
+                      v-for="(item, name) in stat_data?.背包?.装备 || {}"
                       :key="name"
+                      class="expandable"
                       :class="{ selected: expandedItem === 'inv_' + name }"
                       @click="toggleExpand('inv_' + name)"
                     >
                       <div class="exp-header">
                         <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
                         <span class="exp-meta">
-                          <span v-if="item.装甲">装甲 {{ item.装甲 }}</span>
-                          <span>{{ item.重量 }}</span>
-                          <span>{{ item.价值 }}</span>
+                          <span v-if="(item as any).装甲">装甲 {{ (item as any).装甲 }}</span>
+                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
+                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
                         </span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
                             <div class="exp-desc">{{ item.描述 }}</div>
-                            <div class="exp-effects" v-if="item.效果">{{ item.效果 }}</div>
+                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="inv-section" v-show="invTab === 'aid'">
+                  <div v-show="invTab === 'aid'" class="inv-section">
                     <div
-                      class="expandable"
-                      v-for="(item, name) in filterItems('药品')"
+                      v-for="(item, name) in stat_data?.背包?.药品 || {}"
                       :key="name"
+                      class="expandable"
                       :class="{ selected: expandedItem === 'inv_' + name }"
                       @click="toggleExpand('inv_' + name)"
                     >
                       <div class="exp-header">
                         <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
                         <span class="exp-meta">
-                          <span v-if="item.恢复">{{ item.恢复 }}</span>
-                          <span>{{ item.重量 }}</span>
-                          <span>{{ item.价值 }}</span>
+                          <span v-if="(item as any).恢复">{{ (item as any).恢复 }}</span>
+                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
+                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
                         </span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
                             <div class="exp-desc">{{ item.描述 }}</div>
-                            <div class="exp-effects" v-if="item.效果">{{ item.效果 }}</div>
+                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="inv-section" v-show="invTab === 'misc'">
+                  <div v-show="invTab === 'misc'" class="inv-section">
                     <div
-                      class="expandable"
-                      v-for="(item, name) in filterItems('杂物')"
+                      v-for="(item, name) in stat_data?.背包?.道具 || {}"
                       :key="name"
+                      class="expandable"
                       :class="{ selected: expandedItem === 'inv_' + name }"
                       @click="toggleExpand('inv_' + name)"
                     >
@@ -316,15 +306,15 @@
                         <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
                         <span class="exp-meta">
                           <span>材料</span>
-                          <span>{{ item.重量 }}</span>
-                          <span>{{ item.价值 }}</span>
+                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
+                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
                         </span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
                             <div class="exp-desc">{{ item.描述 }}</div>
-                            <div class="exp-effects" v-if="item.效果">{{ item.效果 }}</div>
+                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
                           </div>
                         </div>
                       </div>
@@ -334,88 +324,86 @@
               </div>
 
               <!-- Data Page -->
-              <div class="page" :class="{ active: currentMenu === 'data' }" id="p-data">
+              <div id="p-data" class="page" :class="{ active: currentMenu === 'data' }">
                 <div class="tabs">
                   <div class="tab" :class="{ active: dataTab === 'quests' }" @click="dataTab = 'quests'">任务</div>
                   <div class="tab" :class="{ active: dataTab === 'stats' }" @click="dataTab = 'stats'">统计</div>
                   <div class="tab" :class="{ active: dataTab === 'notes' }" @click="dataTab = 'notes'">笔记</div>
                 </div>
                 <div class="scrollable">
-                  <div class="data-content" v-show="dataTab === 'quests'">
-                    <div class="data-grid" v-if="stat_data?.统计">
+                  <div v-show="dataTab === 'quests'" class="data-content">
+                    <div v-if="stat_data?.基地" class="data-grid">
                       <div class="data-card">
-                        <div class="data-title">已发现地点</div>
-                        <div class="data-val">{{ stat_data.统计.已发现地点 || 0 }}</div>
+                        <div class="data-title">基地等级</div>
+                        <div class="data-val">{{ stat_data.基地.基地等级 || 0 }}</div>
                       </div>
                       <div class="data-card">
-                        <div class="data-title">击杀敌人</div>
-                        <div class="data-val">{{ stat_data.统计.击杀敌人 || 0 }}</div>
+                        <div class="data-title">控制总数</div>
+                        <div class="data-val">
+                          {{ stat_data.基地.控制统计?.当前控制幼女总数 || 0 }}/{{
+                            stat_data.基地.控制统计?.可控制上限 || 3
+                          }}
+                        </div>
                       </div>
                       <div class="data-card">
-                        <div class="data-title">完成任务</div>
-                        <div class="data-val">{{ stat_data.统计.完成任务 || 0 }}</div>
+                        <div class="data-title">战斗型幼女</div>
+                        <div class="data-val">{{ stat_data.基地.幼女分类与数量?.战斗型幼女 || 0 }}</div>
                       </div>
                       <div class="data-card">
                         <div class="data-title">游戏时间</div>
-                        <div class="data-val">{{ stat_data?.世界?.当前时间 || '未知' }}</div>
+                        <div class="data-val">{{ stat_data?.世界?.时间?.阶段 || '未知' }}</div>
                       </div>
                     </div>
                     <div class="inv-cat">进行中的任务</div>
-                    <template v-if="stat_data?.任务">
+                    <template v-if="stat_data?.基地?.任务系统">
                       <div
-                        class="expandable"
-                        v-for="(quest, name) in stat_data.任务"
+                        v-for="(quest, name) in stat_data.基地.任务系统"
                         :key="name"
+                        class="expandable"
                         :class="{ selected: expandedItem === 'quest_' + name }"
                         @click="toggleExpand('quest_' + name)"
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ quest.类型 || '任务' }}</span>
+                          <span class="exp-meta">{{ quest.状态 }} ({{ quest.进度 }}%)</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
                               <div class="exp-desc">{{ quest.描述 }}</div>
-                              <div class="exp-effects" v-if="quest.目标">{{ quest.目标 }}</div>
+                              <div v-if="(quest as any).目标" class="exp-effects">{{ (quest as any).目标 }}</div>
                             </div>
                           </div>
                         </div>
                       </div>
                     </template>
                   </div>
-                  <div class="data-content" v-show="dataTab === 'stats'">
-                    <div class="data-grid" v-if="stat_data?.统计">
-                      <div
-                        class="data-card"
-                        v-for="(val, key) in Object.entries(stat_data.统计).filter(
-                          ([k]) => !['已发现地点', '击杀敌人', '完成任务'].includes(k),
-                        )"
-                        :key="val[0]"
-                      >
-                        <div class="data-title">{{ val[0] }}</div>
-                        <div class="data-val">{{ val[1] }}</div>
+                  <div v-show="dataTab === 'stats'" class="data-content">
+                    <div v-if="stat_data?.NPC列表" class="data-grid">
+                      <div v-for="(val, key) in Object.entries(stat_data.NPC列表)" :key="key" class="data-card">
+                        <div class="data-title">{{ key }}</div>
+                        <div class="data-val">{{ val.好感度 }}</div>
+                        <div class="data-title" style="margin-top: 5px">{{ val.关系 }}</div>
                       </div>
                     </div>
                   </div>
-                  <div class="data-content" v-show="dataTab === 'notes'">
-                    <template v-if="stat_data?.笔记">
+                  <div v-show="dataTab === 'notes'" class="data-content">
+                    <template v-if="stat_data?.重要人物列表">
                       <div
-                        class="expandable"
-                        v-for="(note, name) in stat_data.笔记"
+                        v-for="(person, name) in stat_data.重要人物列表"
                         :key="name"
+                        class="expandable"
                         :class="{ selected: expandedItem === 'note_' + name }"
                         @click="toggleExpand('note_' + name)"
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ note.类型 || '笔记' }}</span>
+                          <span class="exp-meta">{{ person.关系 }} ({{ person.好感度 }})</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
-                              <div class="exp-desc">{{ note.内容 }}</div>
-                              <div class="exp-effects" v-if="note.效果">{{ note.效果 }}</div>
+                              <div v-if="(person as any).描述" class="exp-desc">{{ (person as any).描述 }}</div>
                             </div>
                           </div>
                         </div>
@@ -426,10 +414,10 @@
               </div>
 
               <!-- Map Page -->
-              <div class="page" :class="{ active: currentMenu === 'map' }" id="p-map">
+              <div id="p-map" class="page" :class="{ active: currentMenu === 'map' }">
                 <div
-                  class="map-container"
                   id="mapContainer"
+                  class="map-container"
                   :class="{ dragging: mapState.isDrag }"
                   @mousedown="mapMouseDown"
                   @mousemove="mapMouseMove"
@@ -438,7 +426,11 @@
                   @wheel="mapWheel"
                   @click="mapClick"
                 >
-                  <div class="map-info">{{ stat_data?.世界?.当前地点 || '未知' }}<br />联邦废土</div>
+                  <div class="map-info">
+                    {{ stat_data?.世界?.当前位置?.具体地点 || '未知' }}<br />{{
+                      stat_data?.世界?.当前位置?.区域 || '联邦废土'
+                    }}
+                  </div>
                   <div class="map-controls">
                     <div
                       class="map-btn"
@@ -460,23 +452,26 @@
                     </div>
                     <div class="map-btn" @click="locatePlayer">◎</div>
                   </div>
-                  <div class="map-content" id="mapContent" :style="mapTransformStyle">
+                  <div id="mapContent" class="map-content" :style="mapTransformStyle">
                     <div class="map-grid"></div>
                     <!-- Assuming player is at 1000, 1000 for now, could be driven by data if coordinates exist -->
                     <div class="map-player" style="left: 1000px; top: 1000px"></div>
-                    <template v-if="stat_data?.地图地点">
+                    <template v-if="stat_data?.在场人物">
                       <div
-                        class="map-landmark"
-                        v-for="(loc, name) in stat_data.地图地点"
+                        v-for="(loc, name) in stat_data.在场人物"
                         :key="name"
-                        :style="{ left: (loc.x || 1000) + 'px', top: (loc.y || 1000) + 'px' }"
+                        class="map-landmark"
+                        :style="{
+                          left: ((loc as any).x || 1000 + Math.random() * 200 - 100) + 'px',
+                          top: ((loc as any).y || 1000 + Math.random() * 200 - 100) + 'px',
+                        }"
                         @click.stop="showLandmarkInfo(name as string, loc)"
                       >
                         <div class="landmark-label">{{ name }}</div>
                       </div>
                     </template>
                   </div>
-                  <div class="landmark-info" :class="{ show: mapState.showInfo }" id="landmarkInfo">
+                  <div id="landmarkInfo" class="landmark-info" :class="{ show: mapState.showInfo }">
                     <div class="landmark-info-title">{{ mapState.infoTitle }}</div>
                     <div class="landmark-info-desc">{{ mapState.infoDesc }}</div>
                   </div>
@@ -484,29 +479,60 @@
               </div>
 
               <!-- Radio Page -->
-              <div class="page" :class="{ active: currentMenu === 'radio' }" id="p-radio">
+              <div id="p-radio" class="page" :class="{ active: currentMenu === 'radio' }">
                 <div class="scrollable">
-                  <template v-if="stat_data?.广播电台">
+                  <div class="inv-cat">势力广播</div>
+                  <template v-if="stat_data?.广播系统?.势力广播">
                     <div
-                      class="expandable"
-                      v-for="(station, name) in stat_data.广播电台"
+                      v-for="(content, name) in stat_data.广播系统.势力广播"
                       :key="name"
-                      :class="{ selected: expandedItem === 'radio_' + name }"
-                      @click="toggleExpand('radio_' + name)"
+                      class="expandable"
+                      :class="{ selected: expandedItem === 'radio_faction_' + name }"
+                      @click="toggleExpand('radio_faction_' + name)"
                     >
                       <div class="exp-header">
                         <span class="exp-name">{{ name }}</span>
-                        <span class="exp-meta">{{ station.频率 }}</span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
-                            <div class="exp-desc">{{ station.描述 }}</div>
-                            <div class="exp-effects" v-if="station.当前播放">正在播放: {{ station.当前播放 }}</div>
+                            <div class="exp-desc">{{ content }}</div>
                             <div
+                              v-show="expandedItem === 'radio_faction_' + name"
                               class="sound"
                               style="margin-top: 10px; height: 20px"
-                              v-show="expandedItem === 'radio_' + name"
+                            >
+                              <div class="s-bar"></div>
+                              <div class="s-bar"></div>
+                              <div class="s-bar"></div>
+                              <div class="s-bar"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+
+                  <div class="inv-cat">个人广播</div>
+                  <template v-if="stat_data?.广播系统?.个人广播">
+                    <div
+                      v-for="(content, name) in stat_data.广播系统.个人广播"
+                      :key="name"
+                      class="expandable"
+                      :class="{ selected: expandedItem === 'radio_personal_' + name }"
+                      @click="toggleExpand('radio_personal_' + name)"
+                    >
+                      <div class="exp-header">
+                        <span class="exp-name">{{ name }}</span>
+                      </div>
+                      <div class="exp-details">
+                        <div class="exp-details-inner">
+                          <div class="exp-details-content">
+                            <div class="exp-desc">{{ content }}</div>
+                            <div
+                              v-show="expandedItem === 'radio_personal_' + name"
+                              class="sound"
+                              style="margin-top: 10px; height: 20px"
                             >
                               <div class="s-bar"></div>
                               <div class="s-bar"></div>
@@ -547,8 +573,23 @@ const selectedSpecial = ref('力量');
 // Computed
 const currentWeight = computed(() => {
   let weight = 0;
-  if (stat_data?.主角?.物品栏) {
-    for (const item of Object.values(stat_data.主角.物品栏)) {
+  if (stat_data?.背包?.武器) {
+    for (const item of Object.values(stat_data.背包.武器)) {
+      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
+    }
+  }
+  if (stat_data?.背包?.装备) {
+    for (const item of Object.values(stat_data.背包.装备)) {
+      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
+    }
+  }
+  if (stat_data?.背包?.药品) {
+    for (const item of Object.values(stat_data.背包.药品)) {
+      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
+    }
+  }
+  if (stat_data?.背包?.道具) {
+    for (const item of Object.values(stat_data.背包.道具)) {
       weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
     }
   }
@@ -576,11 +617,9 @@ const getSpecialDesc = (key: string) => {
 
 const filterItems = (category: string) => {
   const items: Record<string, any> = {};
-  if (stat_data?.主角?.物品栏) {
-    for (const [name, item] of Object.entries(stat_data.主角.物品栏)) {
-      if ((item as any).类型 === category) {
-        items[name] = item;
-      }
+  if (stat_data?.背包 && stat_data.背包[category as keyof typeof stat_data.背包]) {
+    for (const [name, item] of Object.entries(stat_data.背包[category as keyof typeof stat_data.背包] || {})) {
+      items[name] = item;
     }
   }
   return items;
@@ -675,7 +714,7 @@ onMounted(() => {
     const menus = ['status', 'inv', 'data', 'map', 'radio'];
     const idx = menus.indexOf(currentMenu.value);
     if (idx !== -1) {
-      let nextIdx = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
+      const nextIdx = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
       if (nextIdx >= 0 && nextIdx < menus.length) {
         currentMenu.value = menus[nextIdx];
       }
