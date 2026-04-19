@@ -1,29 +1,26 @@
-<template>
+﻿<template>
   <div class="card">
-    <BootScreen />
-
     <TopBar :stat_data="stat_data" />
 
     <div class="main">
       <MenuNav v-model:currentMenu="currentMenu" />
 
       <div class="center">
-        <StatusPanel :active="currentMenu === 'status'" :stat_data="stat_data" />
-        <InventoryPanel :active="currentMenu === 'inv'" :stat_data="stat_data" />
-        <DataPanel :active="currentMenu === 'data'" :stat_data="stat_data" @requestDataPage="currentMenu = 'data'" />
-        <MapPanel :active="currentMenu === 'map'" :stat_data="stat_data" />
-        <RadioPanel :active="currentMenu === 'radio'" :stat_data="stat_data" />
+        <StatusPanel v-if="currentMenu === 'status'" :stat_data="stat_data" />
+        <InventoryPanel v-else-if="currentMenu === 'inv'" :stat_data="stat_data" />
+        <DataPanel v-else-if="currentMenu === 'data'" :stat_data="stat_data" @requestDataPage="currentMenu = 'data'" />
+        <MapPanel v-else-if="currentMenu === 'map'" :stat_data="stat_data" />
+        <RadioPanel v-else-if="currentMenu === 'radio'" :stat_data="stat_data" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useDataStore } from './store';
 import { storeToRefs } from 'pinia';
 
-import BootScreen from './components/BootScreen.vue';
 import TopBar from './components/TopBar.vue';
 import MenuNav from './components/MenuNav.vue';
 import StatusPanel from './components/StatusPanel.vue';
@@ -36,79 +33,31 @@ const store = useDataStore();
 const { data: stat_data } = storeToRefs(store);
 
 const currentMenu = ref('status');
-
-// Lifecycle
-onMounted(() => {
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-
-    const menus = ['status', 'inv', 'data', 'map', 'radio'];
-    const idx = menus.indexOf(currentMenu.value);
-
-    if (idx !== -1) {
-      const nextIdx = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
-      if (nextIdx >= 0 && nextIdx < menus.length) currentMenu.value = menus[nextIdx];
-    }
-  };
-
-  const handleWheel = (e: WheelEvent) => {
-    const activePage = document.querySelector('.page.active .scrollable');
-    if (!activePage) return;
-    const { scrollTop, scrollHeight, clientHeight } = activePage;
-    if ((e.deltaY > 0 && scrollTop < scrollHeight - clientHeight) || (e.deltaY < 0 && scrollTop > 0)) {
-      activePage.scrollTop += e.deltaY;
-      e.preventDefault();
-    }
-  };
-
-  window.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('wheel', handleWheel, { passive: false });
-
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown);
-    window.removeEventListener('wheel', handleWheel);
-  });
-});
 </script>
 
 <style scoped>
 .card {
   width: 100%;
   max-width: 720px;
-  background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
-  border: 3px solid var(--gd);
-  box-shadow:
-    inset 0 0 40px rgba(0, 0, 0, 0.8),
-    0 5px 15px rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
+  background: #111;
+  border: 2px solid var(--gd);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   font-family: 'Share Tech Mono', monospace;
   color: var(--g);
   margin: 0 auto;
-  padding: 16px;
-  position: relative;
-  overflow: hidden;
+  padding: 12px;
   height: 500px;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3) 0 2px, transparent 2px 4px);
-  pointer-events: none;
-  z-index: 10;
-  opacity: 0.5;
 }
 
 .main {
   display: flex;
-  height: calc(100% - 60px);
+  flex: 1;
   gap: 15px;
   margin-top: 10px;
-  position: relative;
-  z-index: 1;
+  min-height: 0;
 }
 
 .center {
@@ -116,8 +65,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   border-left: 2px solid var(--gD);
-  padding-left: 20px;
-  position: relative;
-  overflow: hidden;
+  padding-left: 15px;
+  overflow: auto;
 }
 </style>

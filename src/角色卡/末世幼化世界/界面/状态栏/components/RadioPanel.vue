@@ -1,10 +1,10 @@
-<template>
+﻿<template>
   <div id="p-radio" class="page" :class="{ active: active }">
     <div class="scrollable">
       <template v-for="cat in radioCategories" :key="cat.id">
         <div class="inv-cat">{{ cat.label }}</div>
         <div
-          v-for="(content, name) in stat_data?.广播系统?.[cat.key as keyof typeof stat_data.广播系统] || {}"
+          v-for="(content, name) in stat_data?.骞挎挱绯荤粺?.[cat.key as keyof typeof stat_data.骞挎挱绯荤粺] || {}"
           :key="name"
           class="expandable"
           :class="{ selected: expandedItem === 'radio_' + cat.id + '_' + name }"
@@ -47,8 +47,8 @@ defineProps<{
 const expandedItem = ref<string | null>(null);
 
 const radioCategories = [
-  { id: 'faction', label: '势力广播', key: '势力广播' },
-  { id: 'personal', label: '个人广播', key: '个人广播' },
+  { id: 'faction', label: '鍔垮姏骞挎挱', key: '鍔垮姏骞挎挱' },
+  { id: 'personal', label: '涓汉骞挎挱', key: '涓汉骞挎挱' },
 ];
 
 const toggleExpand = (id: string) => {
@@ -58,7 +58,7 @@ const toggleExpand = (id: string) => {
 
 <style scoped>
 .page {
-  position: absolute;
+  position: relative;
   inset: 0;
   opacity: 0;
   pointer-events: none;

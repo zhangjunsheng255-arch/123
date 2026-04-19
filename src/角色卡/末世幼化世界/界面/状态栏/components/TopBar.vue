@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="status">
     <div class="status-l">
       <div class="stat">
@@ -7,12 +7,12 @@
           <div
             class="bar"
             :style="{
-              width: Math.min(((stat_data?.主角?.HP?.当前 || 0) / (stat_data?.主角?.HP?.上限 || 1)) * 100, 100) + '%',
+              width: Math.min(((stat_data?.涓昏?.HP?.褰撳墠 || 0) / (stat_data?.涓昏?.HP?.涓婇檺 || 1)) * 100, 100) + '%',
             }"
           ></div>
           <div class="segs"><div v-for="i in 10" :key="i" class="seg"></div></div>
         </div>
-        <span class="val">{{ stat_data?.主角?.HP?.当前 || 0 }}/{{ stat_data?.主角?.HP?.上限 || 0 }}</span>
+        <span class="val">{{ stat_data?.涓昏?.HP?.褰撳墠 || 0 }}/{{ stat_data?.涓昏?.HP?.涓婇檺 || 0 }}</span>
       </div>
       <div class="stat">
         <label>AP</label>
@@ -20,29 +20,29 @@
           <div
             class="bar"
             :style="{
-              width: Math.min(((stat_data?.主角?.AP?.当前 || 0) / (stat_data?.主角?.AP?.上限 || 1)) * 100, 100) + '%',
+              width: Math.min(((stat_data?.涓昏?.AP?.褰撳墠 || 0) / (stat_data?.涓昏?.AP?.涓婇檺 || 1)) * 100, 100) + '%',
             }"
           ></div>
           <div class="segs"><div v-for="i in 10" :key="i" class="seg"></div></div>
         </div>
-        <span class="val">{{ stat_data?.主角?.AP?.当前 || 0 }}/{{ stat_data?.主角?.AP?.上限 || 0 }}</span>
+        <span class="val">{{ stat_data?.涓昏?.AP?.褰撳墠 || 0 }}/{{ stat_data?.涓昏?.AP?.涓婇檺 || 0 }}</span>
       </div>
     </div>
     <div class="status-c">
       <div class="stat">
-        <label>LEVEL</label><span class="val">{{ stat_data?.主角?.当前等级 || 1 }}</span>
+        <label>LEVEL</label><span class="val">{{ stat_data?.涓昏?.褰撳墠绛夌骇 || 1 }}</span>
       </div>
       <div class="stat">
-        <label>位置</label><span class="val">{{ stat_data?.世界?.当前位置?.具体地点 || '未知' }}</span>
+        <label>浣嶇疆</label><span class="val">{{ stat_data?.涓栫晫?.褰撳墠浣嶇疆?.鍏蜂綋鍦扮偣 || '鏈煡' }}</span>
       </div>
     </div>
     <div class="status-r">
       <div class="stat">
-        <label>CAPS</label><span class="val">{{ stat_data?.主角?.晶核数量 || 0 }}</span>
+        <label>CAPS</label><span class="val">{{ stat_data?.涓昏?.鏅舵牳鏁伴噺 || 0 }}</span>
       </div>
       <div class="info-item">
-        <label>负重</label>
-        <span>{{ currentWeight }}/{{ stat_data?.状态?.属性点?.力量 ? stat_data.状态.属性点.力量 * 10 : 0 }}</span>
+        <label>璐熼噸</label>
+        <span>{{ currentWeight }}/{{ stat_data?.鐘舵€?.灞炴€х偣?.鍔涢噺 ? stat_data.鐘舵€?灞炴€х偣.鍔涢噺 * 10 : 0 }}</span>
       </div>
     </div>
   </div>
@@ -58,16 +58,16 @@ const props = defineProps<{
 const currentWeight = computed(() => {
   let weight = 0;
   const invTabs = [
-    { id: 'weapons', label: '武器', key: '武器' },
-    { id: 'apparel', label: '服装', key: '装备' },
-    { id: 'aid', label: '药品', key: '药品' },
-    { id: 'misc', label: '杂物', key: '道具' },
+    { id: 'weapons', label: '姝﹀櫒', key: '姝﹀櫒' },
+    { id: 'apparel', label: '鏈嶈', key: '瑁呭' },
+    { id: 'aid', label: '鑽搧', key: '鑽搧' },
+    { id: 'misc', label: '鏉傜墿', key: '閬撳叿' },
   ];
   for (const tab of invTabs) {
-    const category = props.stat_data?.背包?.[tab.key as keyof typeof props.stat_data.背包];
+    const category = props.stat_data?.鑳屽寘?.[tab.key as keyof typeof props.stat_data.鑳屽寘];
     if (category) {
       for (const item of Object.values(category)) {
-        weight += (item as any).数量 || 1;
+        weight += (item as any).鏁伴噺 || 1;
       }
     }
   }
@@ -132,12 +132,12 @@ const currentWeight = computed(() => {
 }
 .bar::after {
   content: '';
-  position: absolute;
+  position: relative;
   inset: 0 0 50%;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
 }
 .segs {
-  position: absolute;
+  position: relative;
   inset: 0;
   display: flex;
 }
