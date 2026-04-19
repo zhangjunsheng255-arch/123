@@ -258,9 +258,7 @@
     递归:
       不可被其他条目激活: true
       不可激活其他条目: true
-    内容: |-
-      ---
-      变量更新规则:
+    文件: 世界书\变量\变量更新规则
 
   - 名称: "[mvu_update]变量输出格式"
     启用: true
@@ -310,7 +308,7 @@
       启用: true
       查找表达式: /<update(?:variable)?>(?!.*<\/update(?:variable)?>)\s*(.*)\s*$/gsi
       内容: |-
-
+        
         <details>
         <summary>变量更新中{{random::.::..::...}}</summary>
         $1
@@ -327,7 +325,7 @@
       启用: true
       查找表达式: /<update(?:variable)?>\s*(.*)\s*<\/update(?:variable)?>/gsi
       内容: |-
-
+        
         <details>
         <summary>变量更新情况</summary>
         $1
