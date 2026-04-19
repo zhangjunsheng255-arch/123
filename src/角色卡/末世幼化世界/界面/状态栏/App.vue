@@ -35,7 +35,6 @@
                 <label>HP</label>
                 <div class="bar-wrap">
                   <div
-                    id="hp"
                     class="bar"
                     :style="{
                       width:
@@ -76,8 +75,8 @@
                 <label>CAPS</label><span class="val">{{ stat_data?.主角?.晶核数量 || 0 }}</span>
               </div>
               <div class="info-item">
-                <label>负重</label
-                ><span
+                <label>负重</label>
+                <span
                   >{{ currentWeight }}/{{ stat_data?.状态?.属性点?.力量 ? stat_data.状态.属性点.力量 * 10 : 0 }}</span
                 >
               </div>
@@ -86,42 +85,14 @@
 
           <div class="main">
             <div class="menu">
-              <div class="menu-item" :class="{ active: currentMenu === 'status' }" @click="currentMenu = 'status'">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                  />
-                  <circle cx="12" cy="12" r="5" /></svg
-                >状态
-              </div>
-              <div class="menu-item" :class="{ active: currentMenu === 'inv' }" @click="currentMenu = 'inv'">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"
-                  />
-                  <path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z" /></svg
-                >道具
-              </div>
-              <div class="menu-item" :class="{ active: currentMenu === 'data' }" @click="currentMenu = 'data'">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
-                  /></svg
-                >数据
-              </div>
-              <div class="menu-item" :class="{ active: currentMenu === 'map' }" @click="currentMenu = 'map'">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M20.5 3l-6 1.5-5.5-1.5-6 1.5v15l6-1.5 5.5 1.5 6-1.5V3zM15 18.5l-5.5-1.5-4.5 1.1V5.6l4.5-1.1 5.5 1.5v12.5z"
-                  /></svg
-                >地图
-              </div>
-              <div class="menu-item" :class="{ active: currentMenu === 'radio' }" @click="currentMenu = 'radio'">
-                <svg viewBox="0 0 24 24">
-                  <path
-                    d="M3.24 6.15C2.51 6.43 2 7.17 2 8v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H8.3l8.26-3.34L15.88 1 3.24 6.15zM7 20c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-8h-2v-2h-2v2H4V8h16v4z"
-                  /></svg
-                >广播
+              <div
+                v-for="menu in menus"
+                :key="menu.id"
+                class="menu-item"
+                :class="{ active: currentMenu === menu.id }"
+                @click="currentMenu = menu.id"
+              >
+                <svg viewBox="0 0 24 24" v-html="menu.svg"></svg>{{ menu.label }}
               </div>
             </div>
 
@@ -129,11 +100,15 @@
               <!-- Status Page -->
               <div id="p-status" class="page" :class="{ active: currentMenu === 'status' }">
                 <div class="tabs">
-                  <div class="tab" :class="{ active: statusTab === 'special' }" @click="statusTab = 'special'">
-                    SPECIAL
+                  <div
+                    v-for="tab in statusTabs"
+                    :key="tab.id"
+                    class="tab"
+                    :class="{ active: statusTab === tab.id }"
+                    @click="statusTab = tab.id"
+                  >
+                    {{ tab.label }}
                   </div>
-                  <div class="tab" :class="{ active: statusTab === 'skills' }" @click="statusTab = 'skills'">技能</div>
-                  <div class="tab" :class="{ active: statusTab === 'perks' }" @click="statusTab = 'perks'">PERK</div>
                 </div>
                 <div class="scrollable">
                   <div v-show="statusTab === 'special'" class="stat-content">
@@ -143,7 +118,7 @@
                         :key="key"
                         class="spec-item"
                         :class="{ selected: selectedSpecial === key }"
-                        @click="selectedSpecial = key"
+                        @click="selectedSpecial = key as string"
                       >
                         <div class="spec-info">
                           <div class="spec-letter">{{ getSpecialLetter(key as string) }}</div>
@@ -167,13 +142,11 @@
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ (skill as any).等级 || '1' }}</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
-                              <div class="exp-desc">{{ skill.描述 }}</div>
-                              <div v-if="skill.效果" class="exp-effects">{{ skill.效果 }}</div>
+                              <div class="exp-desc">{{ (skill as any).描述 }}</div>
                             </div>
                           </div>
                         </div>
@@ -191,13 +164,11 @@
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">Rank {{ (perk as any).Rank || 1 }}</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
-                              <div class="exp-desc">{{ perk.描述 }}</div>
-                              <div v-if="(perk as any).效果" class="exp-effects">{{ (perk as any).效果 }}</div>
+                              <div class="exp-desc">{{ (perk as any).描述 }}</div>
                             </div>
                           </div>
                         </div>
@@ -210,111 +181,38 @@
               <!-- Inventory Page -->
               <div id="p-inv" class="page" :class="{ active: currentMenu === 'inv' }">
                 <div class="tabs">
-                  <div class="tab" :class="{ active: invTab === 'weapons' }" @click="invTab = 'weapons'">武器</div>
-                  <div class="tab" :class="{ active: invTab === 'apparel' }" @click="invTab = 'apparel'">服装</div>
-                  <div class="tab" :class="{ active: invTab === 'aid' }" @click="invTab = 'aid'">药品</div>
-                  <div class="tab" :class="{ active: invTab === 'misc' }" @click="invTab = 'misc'">杂物</div>
+                  <div
+                    v-for="tab in invTabs"
+                    :key="tab.id"
+                    class="tab"
+                    :class="{ active: invTab === tab.id }"
+                    @click="invTab = tab.id"
+                  >
+                    {{ tab.label }}
+                  </div>
                 </div>
                 <div class="scrollable">
-                  <div v-show="invTab === 'weapons'" class="inv-section">
+                  <div v-for="tab in invTabs" :key="tab.id" v-show="invTab === tab.id" class="inv-section">
                     <div
-                      v-for="(item, name) in stat_data?.背包?.武器 || {}"
+                      v-for="(item, name) in stat_data?.背包?.[tab.key as keyof typeof stat_data.背包] || {}"
                       :key="name"
                       class="expandable"
                       :class="{ selected: expandedItem === 'inv_' + name }"
                       @click="toggleExpand('inv_' + name)"
                     >
                       <div class="exp-header">
-                        <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
+                        <span class="exp-name">{{ name }} ({{ (item as any).数量 || 1 }})</span>
                         <span class="exp-meta">
-                          <span v-if="(item as any).伤害">dmg {{ (item as any).伤害 }}</span>
-                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
-                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
+                          <span v-if="(item as any).品质">{{ (item as any).品质 }}</span>
+                          <span v-if="(item as any).类型">{{ (item as any).类型 }}</span>
+                          <span v-if="(item as any).部位">{{ (item as any).部位 }}</span>
                         </span>
                       </div>
                       <div class="exp-details">
                         <div class="exp-details-inner">
                           <div class="exp-details-content">
-                            <div class="exp-desc">{{ item.描述 }}</div>
-                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-show="invTab === 'apparel'" class="inv-section">
-                    <div
-                      v-for="(item, name) in stat_data?.背包?.装备 || {}"
-                      :key="name"
-                      class="expandable"
-                      :class="{ selected: expandedItem === 'inv_' + name }"
-                      @click="toggleExpand('inv_' + name)"
-                    >
-                      <div class="exp-header">
-                        <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
-                        <span class="exp-meta">
-                          <span v-if="(item as any).装甲">装甲 {{ (item as any).装甲 }}</span>
-                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
-                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
-                        </span>
-                      </div>
-                      <div class="exp-details">
-                        <div class="exp-details-inner">
-                          <div class="exp-details-content">
-                            <div class="exp-desc">{{ item.描述 }}</div>
-                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-show="invTab === 'aid'" class="inv-section">
-                    <div
-                      v-for="(item, name) in stat_data?.背包?.药品 || {}"
-                      :key="name"
-                      class="expandable"
-                      :class="{ selected: expandedItem === 'inv_' + name }"
-                      @click="toggleExpand('inv_' + name)"
-                    >
-                      <div class="exp-header">
-                        <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
-                        <span class="exp-meta">
-                          <span v-if="(item as any).恢复">{{ (item as any).恢复 }}</span>
-                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
-                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
-                        </span>
-                      </div>
-                      <div class="exp-details">
-                        <div class="exp-details-inner">
-                          <div class="exp-details-content">
-                            <div class="exp-desc">{{ item.描述 }}</div>
-                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div v-show="invTab === 'misc'" class="inv-section">
-                    <div
-                      v-for="(item, name) in stat_data?.背包?.道具 || {}"
-                      :key="name"
-                      class="expandable"
-                      :class="{ selected: expandedItem === 'inv_' + name }"
-                      @click="toggleExpand('inv_' + name)"
-                    >
-                      <div class="exp-header">
-                        <span class="exp-name">{{ name }} ({{ item.数量 }})</span>
-                        <span class="exp-meta">
-                          <span>材料</span>
-                          <span v-if="(item as any).重量">{{ (item as any).重量 }}</span>
-                          <span v-if="(item as any).价值">{{ (item as any).价值 }}</span>
-                        </span>
-                      </div>
-                      <div class="exp-details">
-                        <div class="exp-details-inner">
-                          <div class="exp-details-content">
-                            <div class="exp-desc">{{ item.描述 }}</div>
-                            <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
+                            <div class="exp-desc">{{ (item as any).描述 }}</div>
+                            <div v-if="(item as any).效果" class="exp-effects">{{ (item as any).效果 }}</div>
                           </div>
                         </div>
                       </div>
@@ -326,9 +224,15 @@
               <!-- Data Page -->
               <div id="p-data" class="page" :class="{ active: currentMenu === 'data' }">
                 <div class="tabs">
-                  <div class="tab" :class="{ active: dataTab === 'quests' }" @click="dataTab = 'quests'">任务</div>
-                  <div class="tab" :class="{ active: dataTab === 'stats' }" @click="dataTab = 'stats'">统计</div>
-                  <div class="tab" :class="{ active: dataTab === 'notes' }" @click="dataTab = 'notes'">笔记</div>
+                  <div
+                    v-for="tab in dataTabs"
+                    :key="tab.id"
+                    class="tab"
+                    :class="{ active: dataTab === tab.id }"
+                    @click="dataTab = tab.id"
+                  >
+                    {{ tab.label }}
+                  </div>
                 </div>
                 <div class="scrollable">
                   <div v-show="dataTab === 'quests'" class="data-content">
@@ -365,13 +269,12 @@
                       >
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ quest.状态 }} ({{ quest.进度 }}%)</span>
+                          <span class="exp-meta">{{ (quest as any).状态 }} ({{ (quest as any).进度 || 0 }}%)</span>
                         </div>
                         <div class="exp-details">
                           <div class="exp-details-inner">
                             <div class="exp-details-content">
-                              <div class="exp-desc">{{ quest.描述 }}</div>
-                              <div v-if="(quest as any).目标" class="exp-effects">{{ (quest as any).目标 }}</div>
+                              <div class="exp-desc">{{ (quest as any).描述 }}</div>
                             </div>
                           </div>
                         </div>
@@ -380,32 +283,21 @@
                   </div>
                   <div v-show="dataTab === 'stats'" class="data-content">
                     <div v-if="stat_data?.NPC列表" class="data-grid">
-                      <div v-for="(val, key) in Object.entries(stat_data.NPC列表)" :key="key" class="data-card">
-                        <div class="data-title">{{ key }}</div>
-                        <div class="data-val">{{ val.好感度 }}</div>
-                        <div class="data-title" style="margin-top: 5px">{{ val.关系 }}</div>
+                      <div v-for="(val, name) in stat_data.NPC列表" :key="name" class="data-card">
+                        <div class="data-title">{{ name }}</div>
+                        <div class="data-val">{{ (val as any).好感度 || 0 }}</div>
+                        <div class="data-title" style="margin-top: 5px">{{ (val as any).关系 || '未知' }}</div>
                       </div>
                     </div>
                   </div>
                   <div v-show="dataTab === 'notes'" class="data-content">
                     <template v-if="stat_data?.重要人物列表">
-                      <div
-                        v-for="(person, name) in stat_data.重要人物列表"
-                        :key="name"
-                        class="expandable"
-                        :class="{ selected: expandedItem === 'note_' + name }"
-                        @click="toggleExpand('note_' + name)"
-                      >
+                      <div v-for="(person, name) in stat_data.重要人物列表" :key="name" class="expandable">
                         <div class="exp-header">
                           <span class="exp-name">{{ name }}</span>
-                          <span class="exp-meta">{{ person.关系 }} ({{ person.好感度 }})</span>
-                        </div>
-                        <div class="exp-details">
-                          <div class="exp-details-inner">
-                            <div class="exp-details-content">
-                              <div v-if="(person as any).描述" class="exp-desc">{{ (person as any).描述 }}</div>
-                            </div>
-                          </div>
+                          <span class="exp-meta"
+                            >{{ (person as any).关系 || '中立' }} ({{ (person as any).好感度 || 0 }})</span
+                          >
                         </div>
                       </div>
                     </template>
@@ -427,34 +319,16 @@
                   @click="mapClick"
                 >
                   <div class="map-info">
-                    {{ stat_data?.世界?.当前位置?.具体地点 || '未知' }}<br />{{
-                      stat_data?.世界?.当前位置?.区域 || '联邦废土'
-                    }}
+                    {{ stat_data?.世界?.当前位置?.具体地点 || '未知' }}<br />
+                    {{ stat_data?.世界?.当前位置?.区域 || '联邦废土' }}
                   </div>
                   <div class="map-controls">
-                    <div
-                      class="map-btn"
-                      @click="
-                        mapState.scale = Math.min(mapState.scale * 1.2, 3);
-                        scheduleMapUpdate();
-                      "
-                    >
-                      +
-                    </div>
-                    <div
-                      class="map-btn"
-                      @click="
-                        mapState.scale = Math.max(mapState.scale / 1.2, 0.5);
-                        scheduleMapUpdate();
-                      "
-                    >
-                      -
-                    </div>
+                    <div class="map-btn" @click="zoomIn">+</div>
+                    <div class="map-btn" @click="zoomOut">-</div>
                     <div class="map-btn" @click="locatePlayer">◎</div>
                   </div>
                   <div id="mapContent" class="map-content" :style="mapTransformStyle">
                     <div class="map-grid"></div>
-                    <!-- Assuming player is at 1000, 1000 for now, could be driven by data if coordinates exist -->
                     <div class="map-player" style="left: 1000px; top: 1000px"></div>
                     <template v-if="stat_data?.在场人物">
                       <div
@@ -462,8 +336,8 @@
                         :key="name"
                         class="map-landmark"
                         :style="{
-                          left: ((loc as any).x || 1000 + Math.random() * 200 - 100) + 'px',
-                          top: ((loc as any).y || 1000 + Math.random() * 200 - 100) + 'px',
+                          left: getMapCoord(name as string, loc, 'x') + 'px',
+                          top: getMapCoord(name as string, loc, 'y') + 'px',
                         }"
                         @click.stop="showLandmarkInfo(name as string, loc)"
                       >
@@ -481,14 +355,14 @@
               <!-- Radio Page -->
               <div id="p-radio" class="page" :class="{ active: currentMenu === 'radio' }">
                 <div class="scrollable">
-                  <div class="inv-cat">势力广播</div>
-                  <template v-if="stat_data?.广播系统?.势力广播">
+                  <template v-for="cat in radioCategories" :key="cat.id">
+                    <div class="inv-cat">{{ cat.label }}</div>
                     <div
-                      v-for="(content, name) in stat_data.广播系统.势力广播"
+                      v-for="(content, name) in stat_data?.广播系统?.[cat.key as keyof typeof stat_data.广播系统] || {}"
                       :key="name"
                       class="expandable"
-                      :class="{ selected: expandedItem === 'radio_faction_' + name }"
-                      @click="toggleExpand('radio_faction_' + name)"
+                      :class="{ selected: expandedItem === 'radio_' + cat.id + '_' + name }"
+                      @click="toggleExpand('radio_' + cat.id + '_' + name)"
                     >
                       <div class="exp-header">
                         <span class="exp-name">{{ name }}</span>
@@ -498,39 +372,7 @@
                           <div class="exp-details-content">
                             <div class="exp-desc">{{ content }}</div>
                             <div
-                              v-show="expandedItem === 'radio_faction_' + name"
-                              class="sound"
-                              style="margin-top: 10px; height: 20px"
-                            >
-                              <div class="s-bar"></div>
-                              <div class="s-bar"></div>
-                              <div class="s-bar"></div>
-                              <div class="s-bar"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-
-                  <div class="inv-cat">个人广播</div>
-                  <template v-if="stat_data?.广播系统?.个人广播">
-                    <div
-                      v-for="(content, name) in stat_data.广播系统.个人广播"
-                      :key="name"
-                      class="expandable"
-                      :class="{ selected: expandedItem === 'radio_personal_' + name }"
-                      @click="toggleExpand('radio_personal_' + name)"
-                    >
-                      <div class="exp-header">
-                        <span class="exp-name">{{ name }}</span>
-                      </div>
-                      <div class="exp-details">
-                        <div class="exp-details-inner">
-                          <div class="exp-details-content">
-                            <div class="exp-desc">{{ content }}</div>
-                            <div
-                              v-show="expandedItem === 'radio_personal_' + name"
+                              v-show="expandedItem === 'radio_' + cat.id + '_' + name"
                               class="sound"
                               style="margin-top: 10px; height: 20px"
                             >
@@ -555,11 +397,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDataStore } from './store';
+import { storeToRefs } from 'pinia';
 
 const store = useDataStore();
-const stat_data = store.data;
+const { data: stat_data } = storeToRefs(store);
 
 // State
 const showBoot = ref(true);
@@ -570,40 +413,89 @@ const dataTab = ref('quests');
 const expandedItem = ref<string | null>(null);
 const selectedSpecial = ref('力量');
 
+// Auto-expand when a new quest arrives or first time data loads
+watch(
+  () => stat_data.value?.基地?.任务系统,
+  newQuests => {
+    if (newQuests && Object.keys(newQuests).length > 0) {
+      currentMenu.value = 'data';
+      dataTab.value = 'quests';
+      // Automatically expand the first quest
+      const firstQuestKey = Object.keys(newQuests)[0];
+      expandedItem.value = 'quest_' + firstQuestKey;
+    }
+  },
+  { deep: true, immediate: true }, // immediate true in case data already has quests
+);
+
+// Navigation Config
+const menus = [
+  {
+    id: 'status',
+    label: '状态',
+    svg: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5" />',
+  },
+  {
+    id: 'inv',
+    label: '道具',
+    svg: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/>',
+  },
+  {
+    id: 'data',
+    label: '数据',
+    svg: '<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>',
+  },
+  {
+    id: 'map',
+    label: '地图',
+    svg: '<path d="M20.5 3l-6 1.5-5.5-1.5-6 1.5v15l6-1.5 5.5 1.5 6-1.5V3zM15 18.5l-5.5-1.5-4.5 1.1V5.6l4.5-1.1 5.5 1.5v12.5z"/>',
+  },
+  {
+    id: 'radio',
+    label: '广播',
+    svg: '<path d="M3.24 6.15C2.51 6.43 2 7.17 2 8v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H8.3l8.26-3.34L15.88 1 3.24 6.15zM7 20c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-8h-2v-2h-2v2H4V8h16v4z"/>',
+  },
+];
+const statusTabs = [
+  { id: 'special', label: 'SPECIAL' },
+  { id: 'skills', label: '技能' },
+  { id: 'perks', label: 'PERK' },
+];
+const invTabs = [
+  { id: 'weapons', label: '武器', key: '武器' },
+  { id: 'apparel', label: '服装', key: '装备' },
+  { id: 'aid', label: '药品', key: '药品' },
+  { id: 'misc', label: '杂物', key: '道具' },
+];
+const dataTabs = [
+  { id: 'quests', label: '任务' },
+  { id: 'stats', label: '统计' },
+  { id: 'notes', label: '笔记' },
+];
+const radioCategories = [
+  { id: 'faction', label: '势力广播', key: '势力广播' },
+  { id: 'personal', label: '个人广播', key: '个人广播' },
+];
+
 // Computed
 const currentWeight = computed(() => {
   let weight = 0;
-  if (stat_data?.背包?.武器) {
-    for (const item of Object.values(stat_data.背包.武器)) {
-      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
-    }
-  }
-  if (stat_data?.背包?.装备) {
-    for (const item of Object.values(stat_data.背包.装备)) {
-      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
-    }
-  }
-  if (stat_data?.背包?.药品) {
-    for (const item of Object.values(stat_data.背包.药品)) {
-      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
-    }
-  }
-  if (stat_data?.背包?.道具) {
-    for (const item of Object.values(stat_data.背包.道具)) {
-      weight += ((item as any).重量 || 0) * ((item as any).数量 || 1);
+  for (const tab of invTabs) {
+    const category = stat_data.value?.背包?.[tab.key as keyof typeof stat_data.value.背包];
+    if (category) {
+      for (const item of Object.values(category)) {
+        weight += (item as any).数量 || 1;
+      }
     }
   }
   return weight.toFixed(1);
 });
 
 // Helpers
-const getSpecialLetter = (key: string) => {
-  const map: Record<string, string> = { 力量: 'S', 感知: 'P', 耐力: 'E', 魅力: 'C', 智力: 'I', 敏捷: 'A', 幸运: 'L' };
-  return map[key] || key.charAt(0);
-};
-
-const getSpecialDesc = (key: string) => {
-  const map: Record<string, string> = {
+const getSpecialLetter = (key: string) =>
+  ({ 力量: 'S', 感知: 'P', 耐力: 'E', 魅力: 'C', 智力: 'I', 敏捷: 'A', 幸运: 'L' })[key] || key.charAt(0);
+const getSpecialDesc = (key: string) =>
+  ({
     力量: '近战伤害与负重能力',
     感知: '环境感知与VATS精度',
     耐力: '生命值与抗性',
@@ -611,23 +503,18 @@ const getSpecialDesc = (key: string) => {
     智力: '经验获取与黑客',
     敏捷: '行动点数与潜行',
     幸运: '暴击与随机事件',
-  };
-  return map[key] || '';
-};
-
-const filterItems = (category: string) => {
-  const items: Record<string, any> = {};
-  if (stat_data?.背包 && stat_data.背包[category as keyof typeof stat_data.背包]) {
-    for (const [name, item] of Object.entries(stat_data.背包[category as keyof typeof stat_data.背包] || {})) {
-      items[name] = item;
-    }
-  }
-  return items;
-};
+  })[key] || '';
 
 const toggleExpand = (id: string) => {
   expandedItem.value = expandedItem.value === id ? null : id;
 };
+
+const getStableRandom = (str: string) => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return (Math.abs(hash) % 200) - 100;
+};
+const getMapCoord = (name: string, loc: any, axis: 'x' | 'y') => loc[axis] || 1000 + getStableRandom(name + axis);
 
 // Map Logic
 const mapState = ref({
@@ -640,15 +527,23 @@ const mapState = ref({
   showInfo: false,
   infoTitle: '',
   infoDesc: '',
-  raf: null as number | null,
 });
+const mapTransformStyle = computed(
+  () => `translate(${mapState.value.tx}px, ${mapState.value.ty}px) scale(${mapState.value.scale})`,
+);
 
-const mapTransformStyle = computed(() => {
-  return `translate(${mapState.value.tx}px, ${mapState.value.ty}px) scale(${mapState.value.scale})`;
-});
-
-const scheduleMapUpdate = () => {
-  // Vue reactivity handles the update via computed property
+const zoomIn = () => {
+  mapState.value.scale = Math.min(mapState.value.scale * 1.2, 3);
+};
+const zoomOut = () => {
+  mapState.value.scale = Math.max(mapState.value.scale / 1.2, 0.5);
+};
+const locatePlayer = () => {
+  const r = document.getElementById('mapContainer')?.getBoundingClientRect();
+  if (r) {
+    mapState.value.tx = r.width / 2 - 1000 * mapState.value.scale;
+    mapState.value.ty = r.height / 2 - 1000 * mapState.value.scale;
+  }
 };
 
 const mapMouseDown = (e: MouseEvent) => {
@@ -656,22 +551,17 @@ const mapMouseDown = (e: MouseEvent) => {
   mapState.value.sx = e.clientX - mapState.value.tx;
   mapState.value.sy = e.clientY - mapState.value.ty;
 };
-
 const mapMouseMove = (e: MouseEvent) => {
-  if (!mapState.value.isDrag) return;
-  mapState.value.tx = e.clientX - mapState.value.sx;
-  mapState.value.ty = e.clientY - mapState.value.sy;
+  if (mapState.value.isDrag) {
+    mapState.value.tx = e.clientX - mapState.value.sx;
+    mapState.value.ty = e.clientY - mapState.value.sy;
+  }
 };
-
-const mapMouseUp = () => {
-  mapState.value.isDrag = false;
-};
-
+const mapMouseUp = () => (mapState.value.isDrag = false);
 const mapWheel = (e: WheelEvent) => {
   e.preventDefault();
   mapState.value.scale = Math.max(0.5, Math.min(3, mapState.value.scale * (e.deltaY > 0 ? 0.9 : 1.1)));
 };
-
 const mapClick = (e: MouseEvent) => {
   const target = e.target as HTMLElement;
   if (target.classList.contains('map-container') || target.classList.contains('map-grid')) {
@@ -679,56 +569,31 @@ const mapClick = (e: MouseEvent) => {
   }
 };
 
-const locatePlayer = () => {
-  const container = document.getElementById('mapContainer');
-  if (container) {
-    const r = container.getBoundingClientRect();
-    mapState.value.tx = r.width / 2 - 1000 * mapState.value.scale;
-    mapState.value.ty = r.height / 2 - 1000 * mapState.value.scale;
-  }
-};
-
 const showLandmarkInfo = (name: string, loc: any) => {
   mapState.value.infoTitle = name;
-  mapState.value.infoDesc = loc.描述 || '';
+  mapState.value.infoDesc = loc.类型 ? `类型: ${loc.类型}` : '未知实体';
   mapState.value.showInfo = true;
 };
 
 // Lifecycle
 let bootTimer: ReturnType<typeof setTimeout>;
-let hpInterval: ReturnType<typeof setInterval>;
-const hpOffset = ref(0);
-
 onMounted(() => {
-  bootTimer = setTimeout(() => {
-    showBoot.value = false;
-  }, 3500);
+  bootTimer = setTimeout(() => (showBoot.value = false), 3500);
 
-  hpInterval = setInterval(() => {
-    hpOffset.value = (Math.random() - 0.5) * 4;
-  }, 2000);
-
-  // Keyboard nav
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
-    const menus = ['status', 'inv', 'data', 'map', 'radio'];
-    const idx = menus.indexOf(currentMenu.value);
+    const idx = menus.findIndex(m => m.id === currentMenu.value);
     if (idx !== -1) {
       const nextIdx = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
-      if (nextIdx >= 0 && nextIdx < menus.length) {
-        currentMenu.value = menus[nextIdx];
-      }
+      if (nextIdx >= 0 && nextIdx < menus.length) currentMenu.value = menus[nextIdx].id;
     }
   };
 
-  // Scroll
   const handleWheel = (e: WheelEvent) => {
     const activePage = document.querySelector('.page.active .scrollable');
     if (!activePage) return;
-    const st = activePage.scrollTop;
-    const sh = activePage.scrollHeight;
-    const ch = activePage.clientHeight;
-    if ((e.deltaY > 0 && st < sh - ch) || (e.deltaY < 0 && st > 0)) {
+    const { scrollTop, scrollHeight, clientHeight } = activePage;
+    if ((e.deltaY > 0 && scrollTop < scrollHeight - clientHeight) || (e.deltaY < 0 && scrollTop > 0)) {
       activePage.scrollTop += e.deltaY;
       e.preventDefault();
     }
@@ -739,7 +604,6 @@ onMounted(() => {
 
   onUnmounted(() => {
     clearTimeout(bootTimer);
-    clearInterval(hpInterval);
     window.removeEventListener('keydown', handleKeyDown);
     window.removeEventListener('wheel', handleWheel);
   });
@@ -836,7 +700,6 @@ onMounted(() => {
   font-family: 'Share Tech Mono', monospace;
   background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
   user-select: none;
-  /* Centering */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -873,7 +736,6 @@ onMounted(() => {
     inset 0 0 80px rgba(0, 0, 0, 0.4),
     0 20px 60px rgba(0, 0, 0, 0.8);
 }
-
 .trim {
   position: absolute;
   inset: 8px;
@@ -956,7 +818,6 @@ onMounted(() => {
   pointer-events: none;
   z-index: 100;
 }
-
 .screen {
   background: #050a05;
   border-radius: 22px;
@@ -989,7 +850,6 @@ onMounted(() => {
   pointer-events: none;
 }
 
-/* Status Bar */
 .status {
   display: flex;
   justify-content: space-between;
@@ -1010,7 +870,6 @@ onMounted(() => {
   align-items: center;
   gap: 20px;
 }
-
 .stat {
   display: flex;
   align-items: center;
@@ -1029,7 +888,6 @@ onMounted(() => {
   font-weight: bold;
   min-width: 60px;
 }
-
 .bar-wrap {
   flex: 1;
   height: 12px;
@@ -1064,12 +922,6 @@ onMounted(() => {
 .seg:last-child {
   border-right: none;
 }
-
-.info-bar {
-  display: flex;
-  gap: 25px;
-  align-items: center;
-}
 .info-item {
   display: flex;
   align-items: center;
@@ -1082,14 +934,11 @@ onMounted(() => {
   font-size: 11px;
 }
 
-/* Main Content */
 .main {
   display: flex;
   height: calc(100% - 85px);
   gap: 15px;
 }
-
-/* Menu */
 .menu {
   width: 120px;
   display: flex;
@@ -1141,7 +990,6 @@ onMounted(() => {
   opacity: 1;
 }
 
-/* Center Panel */
 .center {
   flex: 1;
   display: flex;
@@ -1150,7 +998,6 @@ onMounted(() => {
   padding-left: 20px;
   position: relative;
 }
-
 .tabs {
   display: flex;
   gap: 5px;
@@ -1211,7 +1058,6 @@ onMounted(() => {
   z-index: 10;
 }
 
-/* Scrollbar */
 .scrollable {
   flex: 1;
   overflow-y: auto;
@@ -1237,7 +1083,6 @@ onMounted(() => {
   background: var(--gd);
 }
 
-/* Expandable - Optimized Animation */
 .expandable {
   background: rgba(26, 90, 26, 0.08);
   border: 1px solid transparent;
@@ -1256,7 +1101,6 @@ onMounted(() => {
 .expandable.selected .exp-header {
   background: rgba(139, 255, 139, 0.15);
 }
-
 .exp-header {
   display: flex;
   justify-content: space-between;
@@ -1274,7 +1118,6 @@ onMounted(() => {
   display: flex;
   gap: 15px;
 }
-
 .exp-details {
   display: grid;
   grid-template-rows: 0fr;
@@ -1315,7 +1158,6 @@ onMounted(() => {
   color: var(--gd);
 }
 
-/* SPECIAL */
 .special {
   display: flex;
   flex-direction: column;
@@ -1353,7 +1195,6 @@ onMounted(() => {
   opacity: 1;
   box-shadow: 0 0 8px var(--g);
 }
-
 .spec-info {
   display: flex;
   align-items: center;
@@ -1385,7 +1226,6 @@ onMounted(() => {
   text-align: center;
 }
 
-/* Category */
 .inv-cat {
   color: var(--gd);
   font-size: 13px;
@@ -1399,7 +1239,6 @@ onMounted(() => {
   margin-top: 0;
 }
 
-/* Map */
 .map-container {
   flex: 1;
   position: relative;
@@ -1415,7 +1254,6 @@ onMounted(() => {
 .map-container.dragging .map-content {
   transition: none;
 }
-
 .map-controls {
   position: absolute;
   top: 10px;
@@ -1443,7 +1281,6 @@ onMounted(() => {
   border-color: var(--g);
   box-shadow: 0 0 10px rgba(139, 255, 139, 0.3);
 }
-
 .map-content {
   position: absolute;
   transform-origin: 0 0;
@@ -1459,7 +1296,6 @@ onMounted(() => {
   background-size: 40px 40px;
   opacity: 0.2;
 }
-
 .map-landmark {
   position: absolute;
   width: 24px;
@@ -1499,7 +1335,6 @@ onMounted(() => {
   font-size: 12px;
   font-weight: bold;
 }
-
 .landmark-label {
   position: absolute;
   top: 28px;
@@ -1511,7 +1346,6 @@ onMounted(() => {
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
   pointer-events: none;
 }
-
 .map-player {
   position: absolute;
   width: 16px;
@@ -1540,7 +1374,6 @@ onMounted(() => {
   border-radius: 50%;
   opacity: 0.6;
 }
-
 .landmark-info {
   position: absolute;
   bottom: 10px;
@@ -1569,7 +1402,6 @@ onMounted(() => {
   font-size: 13px;
   line-height: 1.5;
 }
-
 .map-info {
   position: absolute;
   top: 10px;
@@ -1580,7 +1412,6 @@ onMounted(() => {
   z-index: 50;
 }
 
-/* Data */
 .data-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1609,7 +1440,6 @@ onMounted(() => {
   text-shadow: 0 0 12px rgba(139, 255, 139, 0.6);
 }
 
-/* Sound bars */
 .sound {
   display: flex;
   gap: 3px;
@@ -1645,7 +1475,6 @@ onMounted(() => {
   animation-delay: 0.15s;
 }
 
-/* Boot Screen */
 .boot {
   position: absolute;
   inset: 0;
