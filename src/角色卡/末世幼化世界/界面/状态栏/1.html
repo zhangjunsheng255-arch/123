@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pip-Boy 3000</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        
+        :root{
+            --g:#8BFF8B;--gd:#4a9a4a;--gD:#1a5a1a;--r:#FF4D4D;
+            --c1:#9B8365;--c2:#7B6344;--c3:#6B5344;--c4:#4A3728;--c5:#3A2A20;
+            --ease:cubic-bezier(0.4,0,0.2,1);--ease-out:cubic-bezier(0,0,0.2,1)
+        }
+        
+        body{
+            background:radial-gradient(ellipse at center,#1a1a1a 0%,#000 100%);
+            font-family:'Share Tech Mono',monospace;
+            overflow:hidden;display:flex;justify-content:center;align-items:center;
+            min-height:100vh;user-select:none
+        }
+        
+        /* CRT Effects */
+        .crt{position:fixed;inset:0;pointer-events:none;z-index:9999;contain:strict}
+        .scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 2px,transparent 2px 4px);animation:scan 8s linear infinite;contain:strict}
+        @keyframes scan{to{transform:translateY(4px)}}
+        .flicker{position:absolute;inset:0;background:rgba(139,255,139,.02);animation:flick .15s infinite}
+        @keyframes flick{0%,100%{opacity:.028}50%{opacity:.015}}
+        .noise{position:absolute;inset:0;opacity:.03;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:n .5s steps(5) infinite}
+        @keyframes n{0%,100%{transform:translate(0)}50%{transform:translate(-2%,2%)}}
+        .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.4) 100%)}
+        
+        /* Device */
+        .device{width:1000px;height:700px;display:flex;flex-direction:column;align-items:center}
+        
+        .top{width:800px;height:60px;background:linear-gradient(180deg,var(--c1) 0%,var(--c2) 50%,var(--c5) 100%);border-radius:30px 30px 0 0;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 2px 5px rgba(255,255,255,.2),0 10px 30px rgba(0,0,0,.5)}
+        .brand{font-size:24px;color:var(--c5);letter-spacing:6px;text-shadow:0 1px 1px rgba(255,255,255,.2)}
+        
+        .case{width:900px;height:580px;background:linear-gradient(145deg,var(--c1) 0%,var(--c2) 30%,var(--c3) 50%,var(--c4) 100%);border-radius:40px;padding:20px;position:relative;box-shadow:inset 0 0 80px rgba(0,0,0,.4),0 20px 60px rgba(0,0,0,.8)}
+        
+        .trim{position:absolute;inset:8px;border:2px solid var(--gD);border-radius:35px;opacity:.6;pointer-events:none}
+        .trim::before{content:'';position:absolute;inset:3px;border:1px solid var(--gd);border-radius:30px;opacity:.4}
+        
+        .screw{position:absolute;width:20px;height:20px;background:radial-gradient(circle at 30% 30%,#D0D0D0 0%,#606060 100%);border-radius:50%;box-shadow:inset 0 2px 4px rgba(255,255,255,.5),0 3px 6px rgba(0,0,0,.5);z-index:10}
+        .screw::before,.screw::after{content:'';position:absolute;top:50%;left:50%;width:14px;height:2px;background:#404040}
+        .screw::before{transform:translate(-50%,-50%) rotate(45deg)}
+        .screw::after{transform:translate(-50%,-50%) rotate(-45deg)}
+        .tl{top:15px;left:15px}.tr{top:15px;right:15px}.bl{bottom:15px;left:15px}.br{bottom:15px;right:15px}
+        
+        .bezel{background:linear-gradient(145deg,#2a2520 0%,#1a1510 100%);border-radius:30px;padding:12px;height:100%;box-shadow:inset 0 0 40px rgba(0,0,0,.8)}
+        .glass{position:absolute;inset:12px;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 30%,transparent 70%,rgba(255,255,255,.05) 100%);pointer-events:none;z-index:100}
+        
+        .screen{background:#050a05;border-radius:22px;height:100%;padding:20px;position:relative;overflow:hidden;box-shadow:inset 0 0 60px rgba(0,0,0,.9)}
+        .glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(139,255,139,.08) 0%,transparent 60%);pointer-events:none;animation:pulse 4s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:.8}50%{opacity:1}}
+        .curve{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.2) 0%,transparent 10%,transparent 90%,rgba(0,0,0,.2) 100%);pointer-events:none}
+        
+        /* Status Bar */
+        .status{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:15px;border-bottom:2px solid var(--gD);margin-bottom:15px}
+        .status-l,.status-c{display:flex;flex-direction:column;gap:8px;width:140px}
+        .status-r{display:flex;align-items:center;gap:20px}
+        
+        .stat{display:flex;align-items:center;gap:8px;color:var(--g);font-size:14px;text-shadow:0 0 10px rgba(139,255,139,.6)}
+        .stat label{color:var(--gd);font-size:11px;min-width:25px}
+        .stat .val{font-size:16px;font-weight:bold;min-width:60px}
+        
+        .bar-wrap{flex:1;height:12px;background:#0a2a0a;border:2px solid var(--gD);position:relative;overflow:hidden;min-width:80px}
+        .bar{height:100%;background:linear-gradient(90deg,var(--g) 0%,var(--gd) 100%);box-shadow:0 0 10px rgba(139,255,139,.6);transition:width .3s var(--ease);position:relative}
+        .bar::after{content:'';position:absolute;inset:0 0 50%;background:linear-gradient(180deg,rgba(255,255,255,.3) 0%,transparent 100%)}
+        .segs{position:absolute;inset:0;display:flex}
+        .seg{flex:1;border-right:1px solid rgba(0,0,0,.5)}.seg:last-child{border-right:none}
+        
+        .info-bar{display:flex;gap:25px;align-items:center}
+        .info-item{display:flex;align-items:center;gap:8px;color:var(--g);font-size:14px}
+        .info-item label{color:var(--gd);font-size:11px}
+        
+        /* Main Content */
+        .main{display:flex;height:calc(100% - 85px);gap:15px}
+        
+        /* Menu */
+        .menu{width:120px;display:flex;flex-direction:column;gap:5px}
+        .menu-item{color:var(--gD);font-size:16px;padding:8px 10px;cursor:pointer;transition:all .2s var(--ease);border:1px solid transparent;display:flex;align-items:center;gap:6px;position:relative}
+        .menu-item::before{content:'';width:0;height:0;border:5px solid transparent;border-left:6px solid var(--g);opacity:0;transition:opacity .2s}
+        .menu-item:hover,.menu-item.active{color:var(--g);background:rgba(139,255,139,.1);border-color:var(--g);box-shadow:0 0 15px rgba(139,255,139,.2),inset 0 0 15px rgba(139,255,139,.05)}
+        .menu-item.active::before{opacity:1}
+        .menu-item svg{width:16px;height:16px;opacity:.5;fill:currentColor;transition:opacity .2s}
+        .menu-item:hover svg,.menu-item.active svg{opacity:1}
+        
+        /* Center Panel */
+        .center{flex:1;display:flex;flex-direction:column;border-left:2px solid var(--gD);padding-left:20px;position:relative}
+        
+        .tabs{display:flex;gap:5px;padding-bottom:12px;border-bottom:2px solid var(--gD);margin-bottom:15px}
+        .tab{color:var(--gD);font-size:14px;padding:6px 16px;cursor:pointer;transition:all .2s var(--ease);position:relative;text-transform:uppercase;letter-spacing:1px}
+        .tab::after{content:'';position:absolute;bottom:-14px;left:0;right:0;height:2px;background:var(--g);opacity:0;transition:opacity .2s;box-shadow:0 0 8px var(--g)}
+        .tab:hover{color:var(--gd)}.tab.active{color:var(--g);text-shadow:0 0 10px rgba(139,255,139,.8)}.tab.active::after{opacity:1}
+        
+        .page{position:absolute;inset:0;opacity:0;pointer-events:none;visibility:hidden;transition:opacity .3s var(--ease),visibility .3s;z-index:1;display:flex;flex-direction:column}
+        .page.active{opacity:1;pointer-events:auto;visibility:visible;z-index:10}
+        
+        /* Scrollbar */
+        .scrollable{flex:1;overflow-y:auto;overflow-x:hidden;padding-right:8px;margin-right:-8px}
+        .scrollable::-webkit-scrollbar{width:6px}
+        .scrollable::-webkit-scrollbar-track{background:rgba(26,90,26,.2);border-radius:3px;border:1px solid var(--gD)}
+        .scrollable::-webkit-scrollbar-thumb{background:var(--gD);border-radius:3px;border:1px solid var(--gd);transition:background .2s}
+        .scrollable::-webkit-scrollbar-thumb:hover{background:var(--gd)}
+        
+        /* Expandable - Optimized Animation */
+        .expandable{background:rgba(26,90,26,.08);border:1px solid transparent;cursor:pointer;transition:all .25s var(--ease);overflow:hidden;margin-bottom:6px;transform:translateZ(0)}
+        .expandable:hover,.expandable.selected{background:rgba(139,255,139,.1);border-color:var(--g);box-shadow:0 0 12px rgba(139,255,139,.2)}
+        .expandable.selected .exp-header{background:rgba(139,255,139,.15)}
+        
+        .exp-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;transition:background .2s var(--ease)}
+        .exp-name{color:var(--g);font-size:15px}.exp-meta{color:var(--gd);font-size:13px;display:flex;gap:15px}
+        
+        .exp-details{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+        .exp-details-inner{overflow:hidden}
+        .expandable.selected .exp-details{grid-template-rows:1fr}
+        .exp-details-content{padding:0 14px;transition:padding .35s var(--ease),opacity .35s var(--ease),border-color .35s var(--ease);opacity:0;border-top:1px solid transparent}
+        .expandable.selected .exp-details-content{padding:12px 14px;opacity:1;border-top-color:var(--gD)}
+        .exp-desc{color:var(--gd);font-size:13px;line-height:1.6;margin-bottom:8px}
+        .exp-effects{color:var(--g);font-size:12px}
+        .exp-effects::before{content:'效果: ';color:var(--gd)}
+        
+        /* SPECIAL */
+        .special{display:flex;flex-direction:column;gap:8px}
+        .spec-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(26,90,26,.1);border:1px solid var(--gD);cursor:pointer;transition:all .2s var(--ease);position:relative}
+        .spec-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--g);opacity:0;transition:opacity .2s}
+        .spec-item:hover,.spec-item.selected{background:rgba(139,255,139,.15);border-color:var(--g);box-shadow:0 0 15px rgba(139,255,139,.3)}
+        .spec-item.selected::before{opacity:1;box-shadow:0 0 8px var(--g)}
+        
+        .spec-info{display:flex;align-items:center;gap:12px}
+        .spec-letter{font-size:28px;font-weight:bold;color:var(--g);text-shadow:0 0 12px rgba(139,255,139,.8);width:35px;text-align:center}
+        .spec-name{color:var(--g);font-size:16px}.spec-desc{color:var(--gd);font-size:11px;margin-top:2px}
+        .spec-val{font-size:32px;font-weight:bold;color:var(--g);text-shadow:0 0 15px rgba(139,255,139,1);min-width:45px;text-align:center}
+        
+        /* Category */
+        .inv-cat{color:var(--gd);font-size:13px;text-transform:uppercase;letter-spacing:2px;margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--gD)}
+        .inv-cat:first-child{margin-top:0}
+        
+        /* Map */
+        .map-container{flex:1;position:relative;overflow:hidden;border:1px solid var(--gD);background:#0a150a;cursor:grab;touch-action:none}
+        .map-container:active{cursor:grabbing}
+        .map-container.dragging .map-content{transition:none}
+        
+        .map-controls{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:100}
+        .map-btn{width:32px;height:32px;background:rgba(10,30,10,.9);border:1px solid var(--gD);color:var(--g);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s var(--ease)}
+        .map-btn:hover{background:rgba(139,255,139,.2);border-color:var(--g);box-shadow:0 0 10px rgba(139,255,139,.3)}
+        
+        .map-content{position:absolute;transform-origin:0 0;transition:transform .15s var(--ease-out);will-change:transform}
+        .map-grid{position:absolute;width:2000px;height:2000px;background-image:linear-gradient(var(--gD) 1px,transparent 1px),linear-gradient(90deg,var(--gD) 1px,transparent 1px);background-size:40px 40px;opacity:.2}
+        
+        .map-landmark{position:absolute;width:24px;height:24px;background:var(--g);border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;box-shadow:0 0 15px var(--g);animation:landmarkPulse 2s infinite;display:flex;align-items:center;justify-content:center}
+        @keyframes landmarkPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.2);opacity:.8}}
+        .map-landmark::before{content:'';position:absolute;inset:-8px;border:2px solid var(--g);border-radius:50%;opacity:.4}
+        .map-landmark::after{content:'▼';color:#050a05;font-size:12px;font-weight:bold}
+        
+        .landmark-label{position:absolute;top:28px;left:50%;transform:translateX(-50%);color:var(--g);font-size:11px;white-space:nowrap;text-shadow:0 0 5px rgba(0,0,0,.8);pointer-events:none}
+        
+        .map-player{position:absolute;width:16px;height:16px;background:var(--r);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 20px var(--r);z-index:50;animation:playerPulse 1s infinite}
+        @keyframes playerPulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.3)}}
+        .map-player::before{content:'';position:absolute;inset:-6px;border:2px solid var(--r);border-radius:50%;opacity:.6}
+        
+        .landmark-info{position:absolute;bottom:10px;left:10px;right:10px;background:rgba(5,10,5,.95);border:1px solid var(--gD);padding:12px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease);z-index:200}
+        .landmark-info.show{opacity:1;pointer-events:auto}
+        .landmark-info-title{color:var(--g);font-size:16px;margin-bottom:6px;text-shadow:0 0 10px rgba(139,255,139,.5)}
+        .landmark-info-desc{color:var(--gd);font-size:13px;line-height:1.5}
+        
+        .map-info{position:absolute;top:10px;left:10px;color:var(--g);font-size:13px;line-height:1.5;z-index:50}
+        
+        /* Data */
+        .data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+        .data-card{padding:16px;background:rgba(26,90,26,.08);border:1px solid var(--gD);transition:border-color .2s}
+        .data-card:hover{border-color:var(--gd)}
+        .data-title{color:var(--gd);font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+        .data-val{color:var(--g);font-size:28px;font-weight:bold;text-shadow:0 0 12px rgba(139,255,139,.6)}
+        
+        /* Sound bars */
+        .sound{display:flex;gap:3px;align-items:flex-end;height:18px}
+        .s-bar{width:3px;background:var(--g);animation:sound .5s ease-in-out infinite alternate}
+        @keyframes sound{from{transform:scaleY(.5)}to{transform:scaleY(1)}}
+        .s-bar:nth-child(1){height:6px}.s-bar:nth-child(2){height:14px;animation-delay:.1s}.s-bar:nth-child(3){height:9px;animation-delay:.2s}.s-bar:nth-child(4){height:16px;animation-delay:.15s}
+        
+        /* Boot Screen */
+        .boot{position:absolute;inset:0;background:#050a05;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:opacity .5s var(--ease)}
+        .boot.hide{opacity:0;pointer-events:none}
+        .boot-logo{font-size:48px;color:var(--g);text-shadow:0 0 30px rgba(139,255,139,.8);margin-bottom:30px;animation:bootPulse 2s infinite}
+        @keyframes bootPulse{0%,100%{opacity:1}50%{opacity:.5}}
+        .boot-t{color:var(--gd);font-size:16px;margin:5px 0}
+        .boot-bar{width:300px;height:4px;background:var(--gD);margin-top:30px;overflow:hidden}
+        .boot-fill{height:100%;background:var(--g);box-shadow:0 0 10px var(--g);animation:boot 3s var(--ease-out) forwards}
+        @keyframes boot{from{width:0}to{width:100%}}
+    </style>
+</head>
+<body>
+    <div class="crt">
+        <div class="scanlines"></div>
+        <div class="flicker"></div>
+        <div class="noise"></div>
+        <div class="vignette"></div>
+    </div>
+    
+    <div class="device">
+        <div class="top"><div class="brand">PIP-BOY 3000 MARK IV</div></div>
+        
+        <div class="case">
+            <div class="trim"></div>
+            <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+            
+            <div class="bezel">
+                <div class="glass"></div>
+                <div class="screen">
+                    <div class="glow"></div>
+                    <div class="curve"></div>
+                    
+                    <div class="boot" id="boot">
+                        <div class="boot-logo">▼▼▼</div>
+                        <div class="boot-t">ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</div>
+                        <div class="boot-t">LOADING PIP-BOY 3000 OS...</div>
+                        <div class="boot-bar"><div class="boot-fill"></div></div>
+                    </div>
+                    
+                    <div class="status">
+                        <div class="status-l">
+                            <div class="stat"><label>HP</label><div class="bar-wrap"><div class="bar" style="width:86%" id="hp"></div><div class="segs"><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div></div><span class="val">245/285</span></div>
+                            <div class="stat"><label>AP</label><div class="bar-wrap"><div class="bar" style="width:100%"></div><div class="segs"><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div></div><span class="val">140/140</span></div>
+                        </div>
+                        <div class="status-c">
+                            <div class="stat"><label>LEVEL</label><span class="val">28</span></div>
+                            <div class="stat"><label>位置</label><span class="val">庇护山丘</span></div>
+                        </div>
+                        <div class="status-r">
+                            <div class="stat"><label>CAPS</label><span class="val">2,847</span></div>
+                            <div class="info-item"><label>负重</label><span>185/250</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="main">
+                        <div class="menu">
+                            <div class="menu-item active" data-p="status"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg>状态</div>
+                            <div class="menu-item" data-p="inv"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/><path d="M7 7h10v2H7zm0 4h10v2H7zm0 4h7v2H7z"/></svg>道具</div>
+                            <div class="menu-item" data-p="data"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>数据</div>
+                            <div class="menu-item" data-p="map"><svg viewBox="0 0 24 24"><path d="M20.5 3l-6 1.5-5.5-1.5-6 1.5v15l6-1.5 5.5 1.5 6-1.5V3zM15 18.5l-5.5-1.5-4.5 1.1V5.6l4.5-1.1 5.5 1.5v12.5z"/></svg>地图</div>
+                            <div class="menu-item" data-p="radio"><svg viewBox="0 0 24 24"><path d="M3.24 6.15C2.51 6.43 2 7.17 2 8v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2H8.3l8.26-3.34L15.88 1 3.24 6.15zM7 20c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-8h-2v-2h-2v2H4V8h16v4z"/></svg>广播</div>
+                        </div>
+                        
+                        <div class="center">
+                            <!-- Status Page -->
+                            <div class="page active" id="p-status">
+                                <div class="tabs">
+                                    <div class="tab active" data-stat-tab="special">SPECIAL</div>
+                                    <div class="tab" data-stat-tab="skills">技能</div>
+                                    <div class="tab" data-stat-tab="perks">PERK</div>
+                                </div>
+                                <div class="scrollable">
+                                    <div class="stat-content" data-stat-content="special" style="display:block">
+                                        <div class="special">
+                                            <div class="spec-item selected"><div class="spec-info"><div class="spec-letter">S</div><div><div class="spec-name">力量 Strength</div><div class="spec-desc">近战伤害与负重能力</div></div></div><div class="spec-val">7</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">P</div><div><div class="spec-name">感知 Perception</div><div class="spec-desc">环境感知与VATS精度</div></div></div><div class="spec-val">5</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">E</div><div><div class="spec-name">耐力 Endurance</div><div class="spec-desc">生命值与抗性</div></div></div><div class="spec-val">6</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">C</div><div><div class="spec-name">魅力 Charisma</div><div class="spec-desc">对话与交易能力</div></div></div><div class="spec-val">4</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">I</div><div><div class="spec-name">智力 Intelligence</div><div class="spec-desc">经验获取与黑客</div></div></div><div class="spec-val">8</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">A</div><div><div class="spec-name">敏捷 Agility</div><div class="spec-desc">行动点数与潜行</div></div></div><div class="spec-val">5</div></div>
+                                            <div class="spec-item"><div class="spec-info"><div class="spec-letter">L</div><div><div class="spec-name">幸运 Luck</div><div class="spec-desc">暴击与随机事件</div></div></div><div class="spec-val">6</div></div>
+                                        </div>
+                                    </div>
+                                    <div class="stat-content" data-stat-content="skills" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">小型枪械</span><span class="exp-meta">65</span></div><div class="exp-details"><div class="exp-desc">使用手枪、步枪和冲锋枪等小型武器的技能。影响命中率和伤害。</div><div class="exp-effects">每点提升5%命中率和2%伤害</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">大型枪械</span><span class="exp-meta">42</span></div><div class="exp-details"><div class="exp-desc">使用重机枪、火箭筒等大型武器的技能。需要较高的力量才能有效使用。</div><div class="exp-effects">每点提升4%命中率和3%伤害</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">能量武器</span><span class="exp-meta">58</span></div><div class="exp-details"><div class="exp-desc">使用激光武器、等离子武器等高科技武器的技能。需要理解武器原理。</div><div class="exp-effects">每点提升5%命中率和2%暴击率</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">徒手</span><span class="exp-meta">38</span></div><div class="exp-details"><div class="exp-desc">不使用武器时的格斗技能。包括拳击、摔跤和各种格斗技巧。</div><div class="exp-effects">每点提升6%伤害和3%暴击率</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">近战武器</span><span class="exp-meta">45</span></div><div class="exp-details"><div class="exp-desc">使用刀、棍棒、球棒等近战武器的技能。在近距离战斗中非常有效。</div><div class="exp-effects">每点提升5%命中率和3%伤害</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">口才</span><span class="exp-meta">52</span></div><div class="exp-details"><div class="exp-desc">通过对话影响他人的技能。可以 convince 他人、获取信息或避免战斗。</div><div class="exp-effects">每点提升5%对话成功率和降低5%商品价格</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">交易</span><span class="exp-meta">48</span></div><div class="exp-details"><div class="exp-desc">买卖物品时的讨价还价技能。影响购买和出售价格。</div><div class="exp-effects">每点降低购买价格2%并提升出售价格2%</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">开锁</span><span class="exp-meta">55</span></div><div class="exp-details"><div class="exp-desc">打开各种锁具的技能。可以进入锁住的房间和容器获取战利品。</div><div class="exp-effects">每点提升5%开锁成功率，可开启更高级锁具</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">黑客</span><span class="exp-meta">72</span></div><div class="exp-details"><div class="exp-desc">入侵计算机终端的技能。可以获取信息、关闭安全系统或控制设备。</div><div class="exp-effects">每点提升5%黑客成功率，可入侵更高级终端</div></div></div>
+                                    </div>
+                                    <div class="stat-content" data-stat-content="perks" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">独行侠</span><span class="exp-meta">Rank 2</span></div><div class="exp-details"><div class="exp-desc">没有同伴时，获得伤害减免和行动点回复加成。适合独狼玩家。</div><div class="exp-effects">+20%伤害减免，+25%行动点回复速度</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">枪械迷</span><span class="exp-meta">Rank 3</span></div><div class="exp-details"><div class="exp-desc">精通枪械改装，可以制作更高级的枪械配件。解锁新的改装选项。</div><div class="exp-effects">解锁高级枪械改装，制作成本降低30%</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">骇客</span><span class="exp-meta">Rank 2</span></div><div class="exp-details"><div class="exp-desc">高级黑客技能，入侵终端时不会触发警报，且可以尝试更多密码。</div><div class="exp-effects">入侵失败不触发警报，每次尝试次数+1</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">搜刮者</span><span class="exp-meta">Rank 1</span></div><div class="exp-details"><div class="exp-desc">在搜索容器时有更高几率找到稀有物品。在废土上生存的关键技能。</div><div class="exp-effects">+50%找到额外战利品几率，+25%找到稀有物品几率</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">科学!</span><span class="exp-meta">Rank 2</span></div><div class="exp-details"><div class="exp-desc">掌握先进科技，可以制作能量武器改装和动力装甲配件。</div><div class="exp-effects">解锁能量武器和动力装甲改装，制作成本降低25%</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">装甲商</span><span class="exp-meta">Rank 1</span></div><div class="exp-details"><div class="exp-desc">精通护甲制作和改装，可以制作更高级的护甲配件。</div><div class="exp-effects">解锁高级护甲改装，护甲耐久度提升30%</div></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Inventory Page -->
+                            <div class="page" id="p-inv">
+                                <div class="tabs">
+                                    <div class="tab active" data-inv="weapons">武器</div>
+                                    <div class="tab" data-inv="apparel">服装</div>
+                                    <div class="tab" data-inv="aid">药品</div>
+                                    <div class="tab" data-inv="misc">杂物</div>
+                                </div>
+                                <div class="scrollable">
+                                    <div class="inv-section" data-section="weapons">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">激光步枪</span><span class="exp-meta"><span>dmg 45</span><span>3.5</span><span>215</span></span></div><div class="exp-details"><div class="exp-desc">经过改装的AER9激光步枪，使用聚变电池供能。射速稳定，精准度高，是废土上最受欢迎的武器之一。</div><div class="exp-effects">+15% 对机器人伤害</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">战斗霰弹枪</span><span class="exp-meta"><span>dmg 60</span><span>7.2</span><span>180</span></span></div><div class="exp-details"><div class="exp-desc">军用级战斗霰弹枪，近距离威力巨大。使用12号霰弹，弹容量8发。</div><div class="exp-effects">+25% 肢解几率</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">10mm手枪</span><span class="exp-meta"><span>dmg 18</span><span>2.8</span><span>65</span></span></div><div class="exp-details"><div class="exp-desc">标准的10mm自动手枪，可靠耐用，是废土上最常见的副武器。</div><div class="exp-effects">无</div></div></div>
+                                    </div>
+                                    <div class="inv-section" data-section="apparel" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">111号避难所连体服</span><span class="exp-meta"><span>装甲 5</span><span>1.0</span><span>20</span></span></div><div class="exp-details"><div class="exp-desc">111号避难所居民的标准制服，由特殊的合成纤维制成，轻便舒适。</div><div class="exp-effects">+1 魅力</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">战斗装甲胸甲</span><span class="exp-meta"><span>装甲 24</span><span>8.0</span><span>140</span></span></div><div class="exp-details"><div class="exp-desc">战前军用战斗装甲的胸甲部分，提供优秀的防护能力。</div><div class="exp-effects">+15 伤害抗性</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">皮甲护腿</span><span class="exp-meta"><span>装甲 8</span><span>2.0</span><span>45</span></span></div><div class="exp-details"><div class="exp-desc">用废土上收集的皮革制成的护腿，提供基础防护。</div><div class="exp-effects">+5 伤害抗性</div></div></div>
+                                    </div>
+                                    <div class="inv-section" data-section="aid" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">治疗针</span><span class="exp-meta"><span>HP +30%</span><span>0.1</span><span>25</span></span></div><div class="exp-details"><div class="exp-desc">自动注射医疗装置，内含多种药物和纳米机器人，可快速治疗伤口。</div><div class="exp-effects">恢复 30% 生命值</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">消辐宁</span><span class="exp-meta"><span>辐射 -300</span><span>0.1</span><span>40</span></span></div><div class="exp-details"><div class="exp-desc">辐射清除药物，能有效清除体内的辐射积累。</div><div class="exp-effects">-300 辐射值</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">福特宁</span><span class="exp-meta"><span>AP +50</span><span>0.1</span><span>35</span></span></div><div class="exp-details"><div class="exp-desc">兴奋剂类药物，能暂时提升行动能力和反应速度。</div><div class="exp-effects">+50 行动点数</div></div></div>
+                                    </div>
+                                    <div class="inv-section" data-section="misc" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">螺丝</span><span class="exp-meta"><span>材料</span><span>0.0</span><span>2</span></span></div><div class="exp-details"><div class="exp-desc">各种规格的螺丝，用于制作和改装装备。</div><div class="exp-effects">制作材料</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">铝锭</span><span class="exp-meta"><span>材料</span><span>0.1</span><span>3</span></span></div><div class="exp-details"><div class="exp-desc">铝金属锭，轻量且耐用，是制作高级装备的重要材料。</div><div class="exp-effects">制作材料</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">电路元件</span><span class="exp-meta"><span>材料</span><span>0.2</span><span>5</span></span></div><div class="exp-details"><div class="exp-desc">各种电子元件，用于制作能量武器和动力装甲。</div><div class="exp-effects">制作材料</div></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Page -->
+                            <div class="page" id="p-data">
+                                <div class="tabs">
+                                    <div class="tab active" data-data-tab="quests">任务</div>
+                                    <div class="tab" data-data-tab="stats">统计</div>
+                                    <div class="tab" data-data-tab="notes">笔记</div>
+                                </div>
+                                <div class="scrollable">
+                                    <div class="data-content" data-data-content="quests">
+                                        <div class="data-grid">
+                                            <div class="data-card"><div class="data-title">已发现地点</div><div class="data-val">47</div></div>
+                                            <div class="data-card"><div class="data-title">击杀敌人</div><div class="data-val">328</div></div>
+                                            <div class="data-card"><div class="data-title">完成任务</div><div class="data-val">12</div></div>
+                                            <div class="data-card"><div class="data-title">游戏时间</div><div class="data-val">24:15</div></div>
+                                        </div>
+                                        <div class="inv-cat">进行中的任务</div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">自由之路</span><span class="exp-meta">主线</span></div><div class="exp-details"><div class="exp-desc">追踪失踪的侦探瓦伦坦，寻找关于尚恩下落的线索。据说他最后出现在钻石城。</div><div class="exp-effects">目标: 前往钻石城寻找瓦伦坦侦探</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">分子世界</span><span class="exp-meta">主线</span></div><div class="exp-details"><div class="exp-desc">帮助铁路组织、钢铁兄弟会或学院建造传送装置，进入学院寻找尚恩。</div><div class="exp-effects">目标: 收集建造传送装置所需的材料</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">庇护山丘</span><span class="exp-meta">支线</span></div><div class="exp-details"><div class="exp-desc">帮助普雷斯敦·加维重建庇护山丘，为废土上的居民建立安全的避难所。</div><div class="exp-effects">目标: 建造足够的床位和防御设施</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">银衣怪客</span><span class="exp-meta">支线</span></div><div class="exp-details"><div class="exp-desc">扮演银衣怪客，在钻石城广播中宣扬正义，惩罚废土上的恶棍。</div><div class="exp-effects">目标: 找到肯特·康诺利并帮助他修复广播设备</div></div></div>
+                                    </div>
+                                    <div class="data-content" data-data-content="stats" style="display:none">
+                                        <div class="data-grid">
+                                            <div class="data-card"><div class="data-title">总击杀</div><div class="data-val">328</div></div>
+                                            <div class="data-card"><div class="data-title">爆头数</div><div class="data-val">86</div></div>
+                                            <div class="data-card"><div class="data-title">开锁次数</div><div class="data-val">124</div></div>
+                                            <div class="data-card"><div class="data-title">黑客次数</div><div class="data-val">67</div></div>
+                                            <div class="data-card"><div class="data-title">制作物品</div><div class="data-val">245</div></div>
+                                            <div class="data-card"><div class="data-title">建造设施</div><div class="data-val">38</div></div>
+                                        </div>
+                                    </div>
+                                    <div class="data-content" data-data-content="notes" style="display:none">
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">钻石城保安日记 - 第12页</span><span class="exp-meta">收集品</span></div><div class="exp-details"><div class="exp-desc">"今天又有人在下水道附近失踪了。市长说没什么大不了的，但我知道事情不对劲。那些失踪的人...他们最后都被看到在下水道入口附近。"</div><div class="exp-effects">阅读后获得少量经验值</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">避难所科技手册</span><span class="exp-meta">收集品</span></div><div class="exp-details"><div class="exp-desc">战前避难所科技公司的宣传手册，详细介绍了各个避难所的功能和设施。背面有一些手写的笔记。</div><div class="exp-effects">阅读后了解避难所历史</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">联邦生存指南</span><span class="exp-meta">收集品</span></div><div class="exp-details"><div class="exp-desc">一本破旧的生存指南，包含了在废土上生存的基本知识：如何净化水、识别可食用植物、躲避危险生物等。</div><div class="exp-effects">阅读后获得生存技能加成</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">铁路组织密码</span><span class="exp-meta">任务物品</span></div><div class="exp-details"><div class="exp-desc">一张写着奇怪符号的纸条。据说这是铁路组织用来标记安全屋位置的密码。需要解码才能理解。</div><div class="exp-effects">任务物品，用于联系铁路组织</div></div></div>
+                                        <div class="expandable"><div class="exp-header"><span class="exp-name">兄弟会任务简报</span><span class="exp-meta">任务物品</span></div><div class="exp-details"><div class="exp-desc">钢铁兄弟会的内部文件，记录了对联邦地区的侦察结果和战略计划。提到学院的活动越来越频繁。</div><div class="exp-effects">任务物品，影响主线剧情走向</div></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Map Page -->
+                            <div class="page" id="p-map">
+                                <div class="map-container" id="mapContainer">
+                                    <div class="map-info">庇护山丘<br>联邦废土</div>
+                                    <div class="map-controls">
+                                        <div class="map-btn" id="zoomIn">+</div>
+                                        <div class="map-btn" id="zoomOut">-</div>
+                                        <div class="map-btn" id="locatePlayer">◎</div>
+                                    </div>
+                                    <div class="map-content" id="mapContent">
+                                        <div class="map-grid"></div>
+                                        <div class="map-player" style="left:1000px;top:1000px"></div>
+                                        <div class="map-landmark" style="left:1000px;top:1000px" data-name="庇护山丘" data-desc="你的家园，一个相对安全的避难所。这里有普雷斯敦·加维和一群需要帮助的居民。"><div class="landmark-label">庇护山丘</div></div>
+                                        <div class="map-landmark" style="left:1200px;top:800px" data-name="钻石城" data-desc="联邦最大的定居点，建立在芬威公园废墟之上。这里有商店、任务和重要的剧情人物。"><div class="landmark-label">钻石城</div></div>
+                                        <div class="map-landmark" style="left:800px;top:1200px" data-name="芳邻镇" data-desc="位于废弃游乐园的定居点，居民多为雇佣兵和赏金猎人。这里可以接到各种灰色地带的任务。"><div class="landmark-label">芳邻镇</div></div>
+                                        <div class="map-landmark" style="left:1400px;top:1000px" data-name="钢铁兄弟会总部" data-desc="钢铁兄弟会在联邦的基地，停靠着巨大的飞艇普利德温号。他们正在与学院作战。"><div class="landmark-label">钢铁兄弟会</div></div>
+                                        <div class="map-landmark" style="left:1000px;top:600px" data-name="111号避难所" data-desc="你醒来时所在的避难所，现在已经被废弃。这里是你寻找尚恩旅程的起点。"><div class="landmark-label">111号避难所</div></div>
+                                        <div class="map-landmark" style="left:600px;top:900px" data-name="学院" data-desc="隐藏在联邦地下的高科技组织，拥有先进的合成人技术。你的儿子尚恩就在这里。"><div class="landmark-label">学院</div></div>
+                                    </div>
+                                    <div class="landmark-info" id="landmarkInfo">
+                                        <div class="landmark-info-title" id="landmarkTitle"></div>
+                                        <div class="landmark-info-desc" id="landmarkDesc"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Radio Page -->
+                            <div class="page" id="p-radio">
+                                <div class="scrollable">
+                                    <div class="expandable" data-station="1">
+                                        <div class="exp-header"><span class="exp-name">钻石城广播</span><span class="exp-meta">101.80 MHz</span></div>
+                                        <div class="exp-details">
+                                            <div class="exp-desc">钻石城最受欢迎的广播电台，由DJ Travis主持。播放各种战前音乐和废土新闻。你可以在这里听到关于你冒险的故事。</div>
+                                            <div class="exp-effects">正在播放: 银衣怪客主题曲</div>
+                                            <div class="sound" style="margin-top:10px;height:20px"><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="expandable" data-station="2">
+                                        <div class="exp-header"><span class="exp-name">古典音乐电台</span><span class="exp-meta">98.70 MHz</span></div>
+                                        <div class="exp-details">
+                                            <div class="exp-desc">播放战前古典音乐的电台，由一位神秘的DJ运营。音乐优雅宁静，是废土上难得的放松时刻。</div>
+                                            <div class="exp-effects">正在播放: 贝多芬 - 月光奏鸣曲</div>
+                                            <div class="sound" style="margin-top:10px;height:20px;display:none"><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="expandable" data-station="3">
+                                        <div class="exp-header"><span class="exp-name">银衣怪客电台</span><span class="exp-meta">103.50 MHz</span></div>
+                                        <div class="exp-details">
+                                            <div class="exp-desc">神秘的银衣怪客用来宣扬正义的电台。每当有恶棍被惩罚时，这里就会播放特殊的广播。</div>
+                                            <div class="exp-effects">信号较弱，时断时续</div>
+                                            <div class="sound" style="margin-top:10px;height:20px;display:none"><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="expandable" data-station="4">
+                                        <div class="exp-header"><span class="exp-name">军事频道</span><span class="exp-meta">95.20 MHz</span></div>
+                                        <div class="exp-details">
+                                            <div class="exp-desc">战前军事广播的残余信号，偶尔可以听到自动播放的警报和指令。对寻找军事设施有帮助。</div>
+                                            <div class="exp-effects">静态噪音较多</div>
+                                            <div class="sound" style="margin-top:10px;height:20px;display:none"><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="expandable" data-station="5">
+                                        <div class="exp-header"><span class="exp-name">求救信号</span><span class="exp-meta">87.50 MHz</span></div>
+                                        <div class="exp-details">
+                                            <div class="exp-desc">一个微弱的求救信号，声音断断续续。信号源似乎来自联邦的某个偏远地区。有人需要救援...</div>
+                                            <div class="exp-effects">信号极弱，难以定位</div>
+                                            <div class="sound" style="margin-top:10px;height:20px;display:none"><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div><div class="s-bar"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+        
+        // Boot
+        setTimeout(()=>$('#boot').classList.add('hide'),3500);
+        
+        // Menu
+        $$('.menu-item').forEach(item=>{
+            item.onclick=()=>{
+                $$('.menu-item').forEach(i=>i.classList.remove('active'));
+                item.classList.add('active');
+                $$('.page').forEach(p=>p.classList.remove('active'));
+                $(`#p-${item.dataset.p}`).classList.add('active');
+            };
+        });
+        
+        // Tabs
+        $$('[data-stat-tab]').forEach(tab=>{
+            tab.onclick=()=>{
+                $$('[data-stat-tab]').forEach(t=>t.classList.remove('active'));
+                tab.classList.add('active');
+                const v=tab.dataset.statTab;
+                $$('.stat-content').forEach(c=>c.style.display=c.dataset.statContent===v?'block':'none');
+            };
+        });
+        $$('[data-data-tab]').forEach(tab=>{
+            tab.onclick=()=>{
+                $$('[data-data-tab]').forEach(t=>t.classList.remove('active'));
+                tab.classList.add('active');
+                const v=tab.dataset.dataTab;
+                $$('.data-content').forEach(c=>c.style.display=c.dataset.dataContent===v?'block':'none');
+            };
+        });
+        
+        // Inventory tabs
+        $$('#p-inv .tab').forEach(tab=>{
+            tab.onclick=()=>{
+                $$('#p-inv .tab').forEach(t=>t.classList.remove('active'));
+                tab.classList.add('active');
+                const sec=tab.dataset.inv;
+                $$('.inv-section').forEach(s=>s.style.display=s.dataset.section===sec?'block':'none');
+            };
+        });
+        
+        // Wrap exp-details content for smooth grid animation
+        $$('.exp-details').forEach(d=>{const html=d.innerHTML;d.innerHTML=`<div class="exp-details-inner"><div class="exp-details-content">${html}</div></div>`});
+        
+        // Expandable items
+        const initExpandable=selector=>{
+            $$(selector).forEach(item=>{
+                item.onclick=e=>{
+                    if(e.target.closest('.exp-details'))return;
+                    const wasSelected=item.classList.contains('selected');
+                    $$(selector).forEach(i=>i.classList.remove('selected'));
+                    if(!wasSelected)item.classList.add('selected');
+                    
+                    // Radio sound toggle
+                    const sound=item.querySelector('.sound');
+                    if(sound){
+                        $$('.sound').forEach(s=>s.style.display='none');
+                        if(!wasSelected)sound.style.display='flex';
+                    }
+                };
+            });
+        };
+        initExpandable('.expandable');
+        
+        // SPECIAL selection
+        $$('.spec-item').forEach(s=>s.onclick=()=>{$$('.spec-item').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')});
+        
+        // Map
+        (()=>{
+            const container=$('#mapContainer'),content=$('#mapContent'),info=$('#landmarkInfo'),title=$('#landmarkTitle'),desc=$('#landmarkDesc');
+            let scale=1,tx=-800,ty=-800,isDrag=false,sx,sy,raf=null,lastT='';
+            
+            const update=()=>{
+                const t=`translate(${tx}px,${ty}px) scale(${scale})`;
+                if(t!==lastT){content.style.transform=t;lastT=t;}
+            };
+            const schedule=()=>{if(!raf)raf=requestAnimationFrame(()=>{update();raf=null;});};
+            
+            $('#zoomIn').onclick=()=>{scale=Math.min(scale*1.2,3);schedule();};
+            $('#zoomOut').onclick=()=>{scale=Math.max(scale/1.2,0.5);schedule();};
+            $('#locatePlayer').onclick=()=>{const r=container.getBoundingClientRect();tx=r.width/2-1000*scale;ty=r.height/2-1000*scale;schedule();};
+            
+            container.onmousedown=e=>{isDrag=true;sx=e.clientX-tx;sy=e.clientY-ty;container.classList.add('dragging');};
+            window.onmousemove=e=>{if(!isDrag)return;tx=e.clientX-sx;ty=e.clientY-sy;schedule();};
+            window.onmouseup=()=>{isDrag=false;container.classList.remove('dragging');};
+            container.onwheel=e=>{e.preventDefault();scale=Math.max(0.5,Math.min(3,scale*(e.deltaY>0?0.9:1.1)));schedule();};
+            
+            $$('.map-landmark').forEach(lm=>{
+                lm.onclick=e=>{e.stopPropagation();title.textContent=lm.dataset.name;desc.textContent=lm.dataset.desc;info.classList.add('show');};
+            });
+            container.onclick=e=>{if(e.target===container||e.target.classList.contains('map-grid'))info.classList.remove('show');};
+            
+            update();
+        })();
+        
+        // HP animation
+        setInterval(()=>{$('#hp').style.width=(86+(Math.random()-.5)*4)+'%'},2000);
+        
+        // Keyboard nav
+        document.onkeydown=e=>{
+            if(e.key!=='ArrowUp'&&e.key!=='ArrowDown')return;
+            const cur=$('.menu-item.active'),next=e.key==='ArrowUp'?cur.previousElementSibling:cur.nextElementSibling;
+            if(next?.classList.contains('menu-item'))next.click();
+        };
+        
+        // Wheel scroll
+        document.onwheel=e=>{
+            const scroll=$('.page.active .scrollable');
+            if(!scroll)return;
+            const st=scroll.scrollTop,sh=scroll.scrollHeight,ch=scroll.clientHeight;
+            if((e.deltaY>0&&st<sh-ch)||(e.deltaY<0&&st>0)){e.preventDefault();scroll.scrollTop+=e.deltaY;}
+        };
+    </script>
+</body>
+</html>
