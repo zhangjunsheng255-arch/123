@@ -72,30 +72,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --g: #8bff8b;
-  --gd: #4a9a4a;
-  --gD: #1a5a1a;
-  --r: #ff4d4d;
-  --c1: #9b8365;
-  --c2: #7b6344;
-  --c3: #6b5344;
-  --c4: #4a3728;
-  --c5: #3a2a20;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-}
-
 .card {
   width: 100%;
   max-width: 720px;
