@@ -17,16 +17,17 @@ interface WorldData {
   }
 }
 
-interface PlayerData {
-  HP?: number
-  HP上限?: number
-  AP?: number
-  AP上限?: number
+interface StatPool {
+  当前?: number
+  上限?: number
 }
 
 interface MvuStatData {
   世界?: WorldData
-  玩家?: PlayerData
+  主角?: {
+    HP?: StatPool
+    AP?: StatPool
+  }
 }
 
 // ==========================================
@@ -51,14 +52,14 @@ export const useStatusStore = defineStore('status', () => {
   // 计算属性 - 从 MVU 数据读取
   // ==========================================
 
-  // HP
-  const hpCurrent = computed(() => mvuData.value?.玩家?.HP ?? 245)
-  const hpMax = computed(() => mvuData.value?.玩家?.HP上限 ?? 285)
+  // HP - 使用主角.HP.当前和主角.HP.上限
+  const hpCurrent = computed(() => mvuData.value?.主角?.HP?.当前 ?? 245)
+  const hpMax = computed(() => mvuData.value?.主角?.HP?.上限 ?? 285)
   const hpPercent = computed(() => Math.min(100, Math.max(0, (hpCurrent.value / hpMax.value) * 100)))
 
-  // AP
-  const apCurrent = computed(() => mvuData.value?.玩家?.AP ?? 140)
-  const apMax = computed(() => mvuData.value?.玩家?.AP上限 ?? 140)
+  // AP - 使用主角.AP.当前和主角.AP.上限
+  const apCurrent = computed(() => mvuData.value?.主角?.AP?.当前 ?? 140)
+  const apMax = computed(() => mvuData.value?.主角?.AP?.上限 ?? 140)
   const apPercent = computed(() => Math.min(100, Math.max(0, (apCurrent.value / apMax.value) * 100)))
 
   // 显示的时间
