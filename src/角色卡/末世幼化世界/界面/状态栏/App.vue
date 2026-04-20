@@ -3,7 +3,6 @@
     <div class="bezel">
       <div class="glass"></div>
       <div class="screen">
-        <div class="glow"></div>
         <div class="curve"></div>
 
         <!-- 加载动画 -->
@@ -50,12 +49,11 @@
     <div class="scanlines"></div>
     <div class="flicker"></div>
     <div class="noise"></div>
-    <div class="vignette"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 // ==========================================
 // 类型定义
@@ -122,7 +120,7 @@ const displayPeriod = computed(() => {
 // ==========================================
 // 监听 MVU 变量更新
 // ==========================================
-let unsubscribe: (() => void) | null = null
+let eventListener: EventOnReturn | null = null
 let bootTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {
@@ -137,7 +135,7 @@ onMounted(() => {
   fetchMvuData()
 
   // 监听 MVU 变量更新事件
-  unsubscribe = eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, fetchMvuData)
+  eventListener = eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, fetchMvuData)
 
   // 启动动画 2.5秒后结束
   bootTimer = setTimeout(() => {
@@ -146,8 +144,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (unsubscribe) {
-    unsubscribe()
+  if (eventListener) {
+    eventListener.stop()
   }
   if (bootTimer) {
     clearTimeout(bootTimer)
@@ -209,19 +207,7 @@ onUnmounted(() => {
   box-shadow: inset 0 0 20px rgba(0, 0, 0, .9);
 }
 
-.glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, rgba(139, 255, 139, .06) 0%, transparent 60%);
-  pointer-events: none;
-  animation: pulse 4s ease-in-out infinite;
-  will-change: opacity;
-}
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
-}
 
 .curve {
   position: absolute;
@@ -321,7 +307,6 @@ onUnmounted(() => {
   color: #8BFF8B;
   font-size: 13px;
   font-weight: bold;
-  text-shadow: 0 0 8px rgba(139, 255, 139, .5);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -340,12 +325,6 @@ onUnmounted(() => {
 
 .period-section .status-value {
   font-size: 14px;
-  animation: glowPulse 2s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-  0%, 100% { text-shadow: 0 0 8px rgba(139, 255, 139, .5); }
-  50% { text-shadow: 0 0 15px rgba(139, 255, 139, .8), 0 0 20px rgba(139, 255, 139, .6); }
 }
 
 /* Main Content */
@@ -369,7 +348,6 @@ onUnmounted(() => {
 .placeholder-text {
   color: #8BFF8B;
   font-size: 14px;
-  text-shadow: 0 0 10px rgba(139, 255, 139, .4);
 }
 
 .placeholder-sub {
@@ -410,12 +388,6 @@ onUnmounted(() => {
   inset: 0;
   opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-.vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, .3) 100%);
 }
 
 /* 响应式适配 */
