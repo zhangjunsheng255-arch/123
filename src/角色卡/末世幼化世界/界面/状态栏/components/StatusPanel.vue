@@ -1,63 +1,63 @@
 <template>
   <div class="status-panel">
-    <!-- 左侧：HP、AP -->
-    <div class="status-l">
-      <div class="stat">
-        <label>HP</label>
-        <div class="bar-wrap">
-          <div class="bar" :style="{ width: hpPercent + '%' }"></div>
-          <div class="segs">
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-          </div>
+    <!-- HP -->
+    <div class="stat-row">
+      <label>HP</label>
+      <div class="bar-wrap">
+        <div class="bar" :style="{ width: hpPercent + '%' }"></div>
+        <div class="segs">
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
         </div>
-        <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
       </div>
-      <div class="stat">
-        <label>AP</label>
-        <div class="bar-wrap">
-          <div class="bar" :style="{ width: apPercent + '%' }"></div>
-          <div class="segs">
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-            <div class="seg"></div>
-          </div>
+      <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
+    </div>
+    
+    <!-- AP -->
+    <div class="stat-row">
+      <label>AP</label>
+      <div class="bar-wrap">
+        <div class="bar" :style="{ width: apPercent + '%' }"></div>
+        <div class="segs">
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
+          <div class="seg"></div>
         </div>
-        <span class="val">{{ apCurrent }}/{{ apMax }}</span>
       </div>
+      <span class="val">{{ apCurrent }}/{{ apMax }}</span>
     </div>
-    <!-- 中间：时间、时刻 -->
-    <div class="status-c">
-      <div class="stat">
-        <label>时间</label>
-        <span class="val time-val">{{ displayTime }}</span>
-      </div>
-      <div class="stat">
-        <label>时刻</label>
-        <span class="val">{{ displayPeriod }}</span>
-      </div>
+    
+    <!-- 时间 -->
+    <div class="info-row">
+      <label>时间</label>
+      <span class="time-val">{{ displayTime }}</span>
     </div>
-    <!-- 右侧：当前位置 -->
-    <div class="status-r">
-      <div class="stat location-stat">
-        <label>当前位置</label>
-        <span class="val location-val">{{ displayLocation }}</span>
-      </div>
+    
+    <!-- 时刻 -->
+    <div class="info-row">
+      <label>时刻</label>
+      <span class="val">{{ displayPeriod }}</span>
+    </div>
+    
+    <!-- 位置 -->
+    <div class="location-row">
+      <label>位置</label>
+      <span class="location-val">{{ displayLocation }}</span>
     </div>
   </div>
 </template>
@@ -91,96 +91,30 @@ const displayPeriod = computed(() => store.displayPeriod)
 <style scoped>
 .status-panel {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px 10px;
-  gap: 24px;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 2px solid #1a5a1a;
 }
 
-.status-l,
-.status-c {
+.stat-row {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.status-l {
-  flex: 0 0 auto;
-  min-width: 160px;
-}
-
-.status-c {
-  flex: 0 0 auto;
-  align-items: flex-start;
-  min-width: 80px;
-}
-
-.status-r {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  justify-content: flex-end;
-}
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #8BFF8B;
-  font-size: 12px;
-  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
-}
-
-.stat label {
-  color: #4a9a4a;
-  font-size: 10px;
-  min-width: 24px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-.stat .val {
-  font-size: 13px;
-  font-weight: bold;
-  min-width: 50px;
-  text-align: right;
-}
-
-.stat .time-val {
-  font-size: 18px;
-  letter-spacing: 2px;
-  min-width: auto;
-}
-
-.location-stat {
-  flex-direction: column;
-  align-items: flex-end;
   gap: 4px;
 }
 
-.location-stat label {
-  min-width: auto;
-  font-size: 9px;
-  letter-spacing: 1px;
+.stat-row label {
+  color: #4a9a4a;
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
-.location-val {
-  font-size: 15px !important;
-  min-width: auto !important;
-  text-align: right;
-  letter-spacing: 1px;
-}
-
-/* 进度条 */
 .bar-wrap {
-  flex: 1;
-  height: 12px;
+  height: 10px;
   background: #0a2a0a;
   border: 2px solid #1a5a1a;
   position: relative;
   overflow: hidden;
-  min-width: 80px;
-  max-width: 120px;
 }
 
 .bar {
@@ -213,49 +147,51 @@ const displayPeriod = computed(() => store.displayPeriod)
   border-right: none;
 }
 
-/* 响应式适配 */
-@media (max-width: 480px) {
-  .status-panel {
-    padding: 6px 10px 8px;
-    gap: 12px;
-  }
+.val {
+  color: #8BFF8B;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+}
 
-  .status-l {
-    min-width: 120px;
-  }
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .status-c {
-    min-width: 60px;
-  }
+.info-row label {
+  color: #4a9a4a;
+  font-size: 10px;
+  text-transform: uppercase;
+}
 
-  .stat {
-    font-size: 10px;
-    gap: 6px;
-  }
+.time-val {
+  color: #8BFF8B;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+}
 
-  .stat label {
-    font-size: 9px;
-    min-width: 20px;
-  }
+.location-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
 
-  .stat .val {
-    font-size: 11px;
-    min-width: 40px;
-  }
+.location-row label {
+  color: #4a9a4a;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
-  .stat .time-val {
-    font-size: 14px;
-    letter-spacing: 1px;
-  }
-
-  .location-val {
-    font-size: 12px !important;
-  }
-
-  .bar-wrap {
-    min-width: 50px;
-    max-width: 80px;
-    height: 10px;
-  }
+.location-val {
+  color: #8BFF8B;
+  font-size: 11px;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+  line-height: 1.3;
 }
 </style>

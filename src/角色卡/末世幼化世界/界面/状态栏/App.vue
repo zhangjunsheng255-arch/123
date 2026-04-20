@@ -12,18 +12,70 @@
           </div>
         </div>
 
-        <!-- 顶部状态栏 -->
-        <StatusPanel />
+        <!-- 主布局：左侧菜单 + 右侧内容 -->
+        <div class="main-layout">
+          <!-- 左侧菜单 -->
+          <div class="sidebar">
+            <StatusPanel />
+            
+            <!-- 菜单导航 -->
+            <nav class="menu">
+              <button
+                v-for="item in menuItems"
+                :key="item.id"
+                class="menu-item"
+                :class="{ active: activeMenu === item.id }"
+                @click="activeMenu = item.id"
+              >
+                <span class="menu-arrow">▶</span>
+                <span class="menu-label">{{ item.label }}</span>
+              </button>
+            </nav>
+          </div>
 
-        <!-- 标签导航 -->
-        <TabNav v-model="activeTab" :tabs="tabs" />
-
-        <!-- 内容区域 -->
-        <div class="content-area">
-          <div v-if="activeTab === '状态'" class="tab-pane active">
-            <div class="placeholder">
-              <div class="placeholder-text">状态面板</div>
-              <div class="placeholder-sub">角色状态详细信息...</div>
+          <!-- 右侧内容区域 -->
+          <div class="content">
+            <TabNav v-model="activeTab" :tabs="currentTabs" />
+            
+            <div class="content-area">
+              <div v-if="activeMenu === '状态'" class="tab-pane active">
+                <div v-if="activeTab === '属性'" class="panel">
+                  <div class="placeholder">
+                    <div class="placeholder-text">SPECIAL 属性</div>
+                    <div class="placeholder-sub">力量、感知、耐力、魅力、智力、敏捷、幸运</div>
+                  </div>
+                </div>
+                <div v-else-if="activeTab === '技能'" class="panel">
+                  <div class="placeholder">
+                    <div class="placeholder-text">技能列表</div>
+                    <div class="placeholder-sub">各种生存技能...</div>
+                  </div>
+                </div>
+              </div>
+              <div v-else-if="activeMenu === '道具'" class="tab-pane active">
+                <div class="placeholder">
+                  <div class="placeholder-text">道具栏</div>
+                  <div class="placeholder-sub">武器、装备、消耗品...</div>
+                </div>
+              </div>
+              <div v-else-if="activeMenu === '数据'" class="tab-pane active">
+                <div class="placeholder">
+                  <div class="placeholder-text">数据面板</div>
+                  <div class="placeholder-sub">任务、统计、笔记...</div>
+                </div>
+              </div>
+              <div v-else-if="activeMenu === '地图'" class="tab-pane active">
+                <div class="placeholder">
+                  <div class="placeholder-text">地图</div>
+                  <div class="placeholder-sub">当前位置和地标...</div>
+                </div>
+              </div>
+              <div v-else-if="activeMenu === '广播'" class="tab-pane active">
+                <div class="placeholder">
+                  <div class="placeholder-text">广播</div>
+                  <div class="placeholder-sub">可接收的电台频率...</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -33,10 +85,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
-import { useStatusStore } from './store'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import StatusPanel from './components/StatusPanel.vue'
 import TabNav from './components/TabNav.vue'
+import { useStatusStore } from './store'
 
 // ==========================================
 // Store
@@ -49,10 +101,41 @@ const store = useStatusStore()
 const isBooting = ref(true)
 
 // ==========================================
-// 标签导航
+// 菜单导航
 // ==========================================
-const tabs = [{ id: '状态', label: '状态' }]
-const activeTab = ref('状态')
+const menuItems = [
+  { id: '状态', label: '状态' },
+  { id: '道具', label: '道具' },
+  { id: '数据', label: '数据' },
+  { id: '地图', label: '地图' },
+  { id: '广播', label: '广播' },
+]
+
+const activeMenu = ref('状态')
+
+// ==========================================
+// 标签导航（根据菜单动态变化）
+// ==========================================
+const statusTabs = [
+  { id: '属性', label: '属性' },
+  { id: '技能', label: '技能' },
+]
+
+const currentTabs = computed(() => {
+  if (activeMenu.value === '状态') {
+    return statusTabs
+  }
+  return []
+})
+
+const activeTab = ref('属性')
+
+// 切换菜单时重置标签
+watch(activeMenu, () => {
+  if (activeMenu.value === '状态') {
+    activeTab.value = '属性'
+  }
+})
 
 // ==========================================
 // 监听 MVU 变量更新
@@ -101,18 +184,18 @@ onUnmounted(() => {
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* 主容器 - 适配酒馆界面 */
+/* 主容器 */
 .pipboy-container {
   width: 100%;
   height: 100%;
-  min-height: 200px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
   font-family: 'Share Tech Mono', monospace;
   contain: layout style;
 }
 
-/* Bezel - 简化边框 */
+/* Bezel */
 .bezel {
   flex: 1;
   background: #1a1510;
@@ -184,11 +267,80 @@ onUnmounted(() => {
   to { width: 100%; }
 }
 
-/* Content Area */
+/* 主布局 - 左右结构 */
+.main-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 左侧边栏 */
+.sidebar {
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid #1a5a1a;
+  background: rgba(10, 30, 10, 0.3);
+}
+
+/* 菜单 */
+.menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 4px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #4a9a4a;
+  font-size: 14px;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background: rgba(139, 255, 139, 0.1);
+  border-color: #1a5a1a;
+  color: #8BFF8B;
+}
+
+.menu-item.active {
+  background: rgba(139, 255, 139, 0.15);
+  border-color: #8BFF8B;
+  color: #8BFF8B;
+  box-shadow: 0 0 15px rgba(139, 255, 139, 0.2), inset 0 0 15px rgba(139, 255, 139, 0.05);
+}
+
+.menu-arrow {
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.menu-item.active .menu-arrow {
+  opacity: 1;
+}
+
+/* 右侧内容区 */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .content-area {
   flex: 1;
   padding: 12px;
-  min-height: 0;
   overflow: auto;
 }
 
@@ -212,6 +364,10 @@ onUnmounted(() => {
   }
 }
 
+.panel {
+  height: 100%;
+}
+
 .placeholder {
   display: flex;
   flex-direction: column;
@@ -219,16 +375,28 @@ onUnmounted(() => {
   justify-content: center;
   gap: 8px;
   height: 100%;
-  min-height: 100px;
+  min-height: 150px;
 }
 
 .placeholder-text {
   color: #8BFF8B;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .placeholder-sub {
   color: #4a9a4a;
-  font-size: 10px;
+  font-size: 11px;
+}
+
+/* 响应式适配 */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 120px;
+  }
+
+  .menu-item {
+    padding: 8px;
+    font-size: 12px;
+  }
 }
 </style>
