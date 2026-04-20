@@ -307,27 +307,30 @@ onUnmounted(() => {
 .status {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding-bottom: 10px;
+  align-items: center;
+  padding: 8px 16px 10px;
   border-bottom: 2px solid #1a5a1a;
   margin-bottom: 10px;
   flex-shrink: 0;
+  gap: 24px;
 }
 
 .status-l,
 .status-c {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .status-l {
-  width: 180px;
+  flex: 0 0 auto;
+  min-width: 160px;
 }
 
 .status-c {
-  width: 100px;
-  align-items: center;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  min-width: 80px;
 }
 
 .status-r {
@@ -340,7 +343,7 @@ onUnmounted(() => {
 .stat {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: #8BFF8B;
   font-size: 12px;
   text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
@@ -349,8 +352,9 @@ onUnmounted(() => {
 .stat label {
   color: #4a9a4a;
   font-size: 10px;
-  min-width: 22px;
+  min-width: 24px;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .stat .val {
@@ -361,36 +365,40 @@ onUnmounted(() => {
 }
 
 .stat .time-val {
-  font-size: 16px;
-  letter-spacing: 1px;
+  font-size: 18px;
+  letter-spacing: 2px;
+  min-width: auto;
 }
 
 .location-stat {
   flex-direction: column;
   align-items: flex-end;
-  gap: 3px;
+  gap: 4px;
 }
 
 .location-stat label {
   min-width: auto;
   font-size: 9px;
+  letter-spacing: 1px;
 }
 
 .location-val {
-  font-size: 14px !important;
+  font-size: 15px !important;
   min-width: auto !important;
   text-align: right;
+  letter-spacing: 1px;
 }
 
 /* 进度条 */
 .bar-wrap {
   flex: 1;
-  height: 10px;
+  height: 12px;
   background: #0a2a0a;
   border: 2px solid #1a5a1a;
   position: relative;
   overflow: hidden;
-  min-width: 60px;
+  min-width: 80px;
+  max-width: 120px;
 }
 
 .bar {
@@ -453,20 +461,27 @@ onUnmounted(() => {
 
 /* 响应式适配 */
 @media (max-width: 480px) {
+  .status {
+    padding: 6px 10px 8px;
+    gap: 12px;
+  }
+
   .status-l {
-    width: 140px;
+    min-width: 120px;
   }
 
   .status-c {
-    width: 80px;
+    min-width: 60px;
   }
 
   .stat {
     font-size: 10px;
+    gap: 6px;
   }
 
   .stat label {
     font-size: 9px;
+    min-width: 20px;
   }
 
   .stat .val {
@@ -475,16 +490,18 @@ onUnmounted(() => {
   }
 
   .stat .time-val {
-    font-size: 13px;
+    font-size: 14px;
+    letter-spacing: 1px;
   }
 
   .location-val {
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
 
   .bar-wrap {
     min-width: 50px;
-    height: 8px;
+    max-width: 80px;
+    height: 10px;
   }
 }
 </style>
