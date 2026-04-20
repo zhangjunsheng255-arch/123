@@ -1,10 +1,7 @@
 ﻿<template>
   <div class="status-bar-container">
     <div class="bezel">
-      <div class="glass"></div>
       <div class="screen">
-        <div class="curve"></div>
-
         <!-- 加载动画 -->
         <div class="boot" :class="{ hide: !isBooting }">
           <div class="boot-logo">▼▼▼</div>
@@ -44,12 +41,6 @@
     </div>
   </div>
 
-  <!-- CRT 效果 -->
-  <div class="crt">
-    <div class="scanlines"></div>
-    <div class="flicker"></div>
-    <div class="noise"></div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -178,21 +169,11 @@ onUnmounted(() => {
 /* Bezel - 简化边框 */
 .bezel {
   flex: 1;
-  background: linear-gradient(145deg, #2a2520 0%, #1a1510 100%);
+  background: #1a1510;
   border-radius: 12px;
   padding: 6px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, .8), 0 4px 12px rgba(0, 0, 0, .4);
   display: flex;
   overflow: hidden;
-}
-
-.glass {
-  position: absolute;
-  inset: 6px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, .08) 0%, transparent 30%, transparent 70%, rgba(255, 255, 255, .03) 100%);
-  pointer-events: none;
-  z-index: 100;
 }
 
 .screen {
@@ -204,17 +185,9 @@ onUnmounted(() => {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, .9);
 }
 
 
-
-.curve {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(0, 0, 0, .15) 0%, transparent 10%, transparent 90%, rgba(0, 0, 0, .15) 100%);
-  pointer-events: none;
-}
 
 /* Boot Screen */
 .boot {
@@ -237,14 +210,7 @@ onUnmounted(() => {
 .boot-logo {
   font-size: 28px;
   color: #8BFF8B;
-  text-shadow: 0 0 20px rgba(139, 255, 139, .8);
   margin-bottom: 12px;
-  animation: bootPulse 2s infinite;
-}
-
-@keyframes bootPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
 }
 
 .boot-t {
@@ -266,7 +232,6 @@ onUnmounted(() => {
 .boot-fill {
   height: 100%;
   background: #8BFF8B;
-  box-shadow: 0 0 8px #8BFF8B;
   animation: boot 2.5s cubic-bezier(0, 0, 0.2, 1) forwards;
 }
 
@@ -353,41 +318,6 @@ onUnmounted(() => {
 .placeholder-sub {
   color: #4a9a4a;
   font-size: 10px;
-}
-
-/* CRT Effects - 简化 */
-.crt {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  contain: strict;
-}
-
-.scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .25) 0 1px, transparent 1px 3px);
-  opacity: 0.6;
-}
-
-.flicker {
-  position: absolute;
-  inset: 0;
-  background: rgba(139, 255, 139, .015);
-  animation: flick 0.15s steps(2) infinite;
-}
-
-@keyframes flick {
-  0%, 100% { opacity: 0.025; }
-  50% { opacity: 0.012; }
-}
-
-.noise {
-  position: absolute;
-  inset: 0;
-  opacity: 0.02;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* 响应式适配 */
