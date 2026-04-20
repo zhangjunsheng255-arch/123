@@ -345,7 +345,7 @@
         ```
         <body>
         <script>
-        $('body').load('https://raw.githubusercontent.com/zhangjunsheng255-arch/123/main/dist/角色卡/末世幼化世界/界面/状态栏/index.html')
+        $('body').load('https://testingcf.jsdelivr.net/gh/zhangjunsheng255-arch/123/dist/角色卡/末世幼化世界/界面/状态栏/index.html')
         </script>
         </body>
         ```
