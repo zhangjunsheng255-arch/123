@@ -13,18 +13,65 @@
         </div>
 
         <!-- 状态栏 -->
-        <div class="status-bar">
-          <div class="status-section time-section">
-            <div class="status-label">时间</div>
-            <div class="status-value">{{ displayTime }}</div>
+        <div class="status">
+          <!-- 左侧：HP、AP -->
+          <div class="status-l">
+            <div class="stat">
+              <label>HP</label>
+              <div class="bar-wrap">
+                <div class="bar" :style="{ width: hpPercent + '%' }"></div>
+                <div class="segs">
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                </div>
+              </div>
+              <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
+            </div>
+            <div class="stat">
+              <label>AP</label>
+              <div class="bar-wrap">
+                <div class="bar" :style="{ width: apPercent + '%' }"></div>
+                <div class="segs">
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                  <div class="seg"></div>
+                </div>
+              </div>
+              <span class="val">{{ apCurrent }}/{{ apMax }}</span>
+            </div>
           </div>
-          <div class="status-section location-section">
-            <div class="status-label">地点</div>
-            <div class="status-value">{{ displayLocation }}</div>
+          <!-- 中间：时间、时刻 -->
+          <div class="status-c">
+            <div class="stat">
+              <label>时间</label>
+              <span class="val time-val">{{ displayTime }}</span>
+            </div>
+            <div class="stat">
+              <label>时刻</label>
+              <span class="val">{{ displayPeriod }}</span>
+            </div>
           </div>
-          <div class="status-section period-section">
-            <div class="status-label">时刻</div>
-            <div class="status-value">{{ displayPeriod }}</div>
+          <!-- 右侧：当前位置 -->
+          <div class="status-r">
+            <div class="stat location-stat">
+              <label>当前位置</label>
+              <span class="val location-val">{{ displayLocation }}</span>
+            </div>
           </div>
         </div>
 
@@ -40,7 +87,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -62,8 +108,16 @@ interface WorldData {
   }
 }
 
+interface PlayerData {
+  HP?: number
+  HP上限?: number
+  AP?: number
+  AP上限?: number
+}
+
 interface MvuStatData {
   世界?: WorldData
+  玩家?: PlayerData
 }
 
 // ==========================================
@@ -77,7 +131,7 @@ const isBooting = ref(true)
 const mvuData = ref<MvuStatData>({})
 const messageId = ref<number>(0)
 
-// 获取 MVU 数据 - 使用可选链优化
+// 获取 MVU 数据
 const fetchMvuData = () => {
   try {
     const data = Mvu.getMvuData({ type: 'message', message_id: messageId.value })
@@ -90,6 +144,16 @@ const fetchMvuData = () => {
 // ==========================================
 // 计算属性 - 从 MVU 数据读取
 // ==========================================
+
+// HP
+const hpCurrent = computed(() => mvuData.value?.玩家?.HP ?? 245)
+const hpMax = computed(() => mvuData.value?.玩家?.HP上限 ?? 285)
+const hpPercent = computed(() => Math.min(100, Math.max(0, (hpCurrent.value / hpMax.value) * 100)))
+
+// AP
+const apCurrent = computed(() => mvuData.value?.玩家?.AP ?? 140)
+const apMax = computed(() => mvuData.value?.玩家?.AP上限 ?? 140)
+const apPercent = computed(() => Math.min(100, Math.max(0, (apCurrent.value / apMax.value) * 100)))
 
 // 显示的时间
 const displayTime = computed(() => {
@@ -150,6 +214,7 @@ onUnmounted(() => {
   --g: #8BFF8B;
   --gd: #4a9a4a;
   --gD: #1a5a1a;
+  --r: #FF4D4D;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
@@ -186,8 +251,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
 }
-
-
 
 /* Boot Screen */
 .boot {
@@ -240,56 +303,124 @@ onUnmounted(() => {
   to { width: 100%; }
 }
 
-/* Status Bar */
-.status-bar {
+/* Status Bar - 参考前端界面.html */
+.status {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  border-bottom: 1px solid #1a5a1a;
-  margin-bottom: 8px;
-  background: rgba(26, 90, 26, 0.08);
-  border-radius: 6px;
+  align-items: flex-start;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1a5a1a;
+  margin-bottom: 10px;
   flex-shrink: 0;
 }
 
-.status-section {
+.status-l,
+.status-c {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+}
+
+.status-l {
+  width: 180px;
+}
+
+.status-c {
+  width: 100px;
   align-items: center;
-  gap: 3px;
+}
+
+.status-r {
+  display: flex;
+  align-items: center;
   flex: 1;
+  justify-content: flex-end;
 }
 
-.status-label {
-  color: #4a9a4a;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.status-value {
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #8BFF8B;
+  font-size: 12px;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+}
+
+.stat label {
+  color: #4a9a4a;
+  font-size: 10px;
+  min-width: 22px;
+  text-transform: uppercase;
+}
+
+.stat .val {
   font-size: 13px;
   font-weight: bold;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  min-width: 50px;
+  text-align: right;
 }
 
-.time-section .status-value {
+.stat .time-val {
   font-size: 16px;
   letter-spacing: 1px;
 }
 
-.location-section .status-value {
-  font-size: 11px;
+.location-stat {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
 }
 
-.period-section .status-value {
-  font-size: 14px;
+.location-stat label {
+  min-width: auto;
+  font-size: 9px;
+}
+
+.location-val {
+  font-size: 14px !important;
+  min-width: auto !important;
+  text-align: right;
+}
+
+/* 进度条 */
+.bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: #0a2a0a;
+  border: 2px solid #1a5a1a;
+  position: relative;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, #8BFF8B 0%, #4a9a4a 100%);
+  box-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.bar::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+}
+
+.segs {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.seg {
+  flex: 1;
+  border-right: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.seg:last-child {
+  border-right: none;
 }
 
 /* Main Content */
@@ -322,28 +453,38 @@ onUnmounted(() => {
 
 /* 响应式适配 */
 @media (max-width: 480px) {
-  .status-bar {
-    padding: 6px 8px;
+  .status-l {
+    width: 140px;
   }
-  
-  .status-value {
-    font-size: 11px;
+
+  .status-c {
+    width: 80px;
   }
-  
-  .time-section .status-value {
-    font-size: 14px;
+
+  .stat {
+    font-size: 10px;
   }
-  
-  .location-section .status-value {
+
+  .stat label {
     font-size: 9px;
   }
-  
-  .period-section .status-value {
-    font-size: 12px;
+
+  .stat .val {
+    font-size: 11px;
+    min-width: 40px;
   }
-  
-  .status-label {
-    font-size: 8px;
+
+  .stat .time-val {
+    font-size: 13px;
+  }
+
+  .location-val {
+    font-size: 11px !important;
+  }
+
+  .bar-wrap {
+    min-width: 50px;
+    height: 8px;
   }
 }
 </style>
