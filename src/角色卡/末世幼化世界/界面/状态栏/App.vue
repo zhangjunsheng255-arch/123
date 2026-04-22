@@ -127,7 +127,7 @@ onUnmounted(() => {
 .pipboy-container {
   width: 100%;
   height: 100%;
-  min-height: 400px;
+  min-height: 500px;
   display: flex;
   flex-direction: column;
   font-family: 'Share Tech Mono', monospace;
@@ -137,7 +137,7 @@ onUnmounted(() => {
   flex: 1;
   background: #1a1510;
   border-radius: 12px;
-  padding: 6px;
+  padding: 8px;
   display: flex;
   overflow: hidden;
 }
@@ -171,24 +171,24 @@ onUnmounted(() => {
 }
 
 .boot-logo {
-  font-size: 24px;
+  font-size: 28px;
   color: var(--g);
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .boot-t {
   color: var(--gd);
-  font-size: 11px;
-  margin: 3px 0;
+  font-size: 13px;
+  margin: 4px 0;
   text-align: center;
-  padding: 0 16px;
+  padding: 0 20px;
 }
 
 .boot-bar {
-  width: 180px;
-  height: 2px;
+  width: 200px;
+  height: 3px;
   background: var(--gD);
-  margin-top: 12px;
+  margin-top: 16px;
   overflow: hidden;
 }
 
@@ -218,7 +218,7 @@ onUnmounted(() => {
 
 /* 左侧边栏 */
 .sidebar {
-  width: 100px;
+  width: 120px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -230,23 +230,24 @@ onUnmounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px;
-  gap: 4px;
+  padding: 12px 10px;
+  gap: 8px;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
+  gap: 10px;
+  padding: 12px 14px;
   background: transparent;
   border: 1px solid transparent;
   color: var(--gd);
-  font-size: 13px;
+  font-size: 16px;
   font-family: 'Share Tech Mono', monospace;
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
+  font-weight: bold;
 }
 
 .menu-item:hover {
@@ -263,7 +264,7 @@ onUnmounted(() => {
 }
 
 .menu-arrow {
-  font-size: 10px;
+  font-size: 12px;
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -279,7 +280,7 @@ onUnmounted(() => {
   flex-direction: column;
   overflow: hidden;
   min-height: 0;
-  padding: 10px;
+  padding: 12px;
 }
 
 .panel {
@@ -312,28 +313,79 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 12px;
   height: 100%;
 }
 
 .placeholder-text {
   color: var(--g);
-  font-size: 16px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .placeholder-sub {
   color: var(--gd);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 /* 响应式适配 */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+  .pipboy-container {
+    min-height: 400px;
+  }
+
   .sidebar {
-    width: 80px;
+    width: 100px;
+  }
+
+  .menu {
+    padding: 10px 8px;
+    gap: 6px;
   }
 
   .menu-item {
-    padding: 6px 8px;
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  .content {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bezel {
+    padding: 6px;
+  }
+
+  .sidebar {
+    width: 85px;
+  }
+
+  .menu {
+    padding: 8px 6px;
+    gap: 5px;
+  }
+
+  .menu-item {
+    padding: 8px 10px;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .menu-arrow {
+    font-size: 10px;
+  }
+
+  .content {
+    padding: 8px;
+  }
+
+  .placeholder-text {
+    font-size: 16px;
+  }
+
+  .placeholder-sub {
     font-size: 12px;
   }
 }

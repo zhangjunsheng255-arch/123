@@ -80,35 +80,37 @@ const displayPeriod = computed(() => store.displayPeriod)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 12px 16px;
   border-bottom: 2px solid var(--gD);
-  gap: 15px;
+  gap: 20px;
+  flex-shrink: 0;
 }
 
 .left-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: 160px;
+  gap: 8px;
+  width: 200px;
   flex-shrink: 0;
 }
 
 .stat-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .stat-row label {
   color: var(--gd);
-  font-size: 11px;
+  font-size: 14px;
   text-transform: uppercase;
-  min-width: 25px;
+  min-width: 30px;
+  font-weight: bold;
 }
 
 .bar-wrap {
   flex: 1;
-  height: 10px;
+  height: 12px;
   background: #0a2a0a;
   border: 1px solid var(--gD);
   position: relative;
@@ -147,10 +149,10 @@ const displayPeriod = computed(() => store.displayPeriod)
 
 .val {
   color: var(--g);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   text-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
-  min-width: 50px;
+  min-width: 60px;
   text-align: right;
 }
 
@@ -158,43 +160,44 @@ const displayPeriod = computed(() => store.displayPeriod)
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   min-width: 0;
 }
 
 .info-row {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 30px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .info-item label {
   color: var(--gd);
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .location-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .location-row label {
   color: var(--gd);
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .location-val {
   color: var(--g);
-  font-size: 12px;
+  font-size: 14px;
   text-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
   white-space: nowrap;
   overflow: hidden;
@@ -205,20 +208,113 @@ const displayPeriod = computed(() => store.displayPeriod)
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .time-val {
   color: var(--g);
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
 }
 
 .period-val {
   color: var(--gd);
-  font-size: 10px;
+  font-size: 12px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 10px 12px;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .left-section {
+    width: 100%;
+    flex-direction: row;
+    gap: 15px;
+  }
+
+  .stat-row {
+    flex: 1;
+  }
+
+  .center-section {
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+    width: calc(100% - 100px);
+  }
+
+  .info-row {
+    gap: 15px;
+  }
+
+  .location-row {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .right-section {
+    width: 80px;
+  }
+
+  .time-val {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-bar {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .left-section {
+    gap: 8px;
+  }
+
+  .stat-row label {
+    font-size: 12px;
+    min-width: 25px;
+  }
+
+  .val {
+    font-size: 12px;
+    min-width: 50px;
+  }
+
+  .center-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .info-item label,
+  .location-row label {
+    font-size: 11px;
+  }
+
+  .location-val {
+    font-size: 12px;
+  }
+
+  .right-section {
+    width: auto;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .time-val {
+    font-size: 14px;
+  }
+
+  .period-val {
+    font-size: 11px;
+  }
 }
 </style>

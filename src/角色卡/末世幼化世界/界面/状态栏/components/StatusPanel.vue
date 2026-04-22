@@ -15,7 +15,7 @@
 
     <!-- SPECIAL 属性 -->
     <div v-if="activeTab === 'special'" class="tab-content">
-      <div class="special-list scrollable">
+      <div class="special-list">
         <div v-for="attr in specialAttrs" :key="attr.key" class="spec-item"
           :class="{ selected: selectedSpecial === attr.key }" @click="selectedSpecial = attr.key">
           <div class="spec-info">
@@ -103,28 +103,29 @@ const perks = computed(() => store.perks)
 
 .tabs {
   display: flex;
-  gap: 5px;
-  padding: 8px 0;
+  gap: 8px;
+  padding: 12px 0;
   border-bottom: 2px solid var(--gD);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
 .tab {
   color: var(--gd);
-  font-size: 13px;
-  padding: 5px 12px;
+  font-size: 16px;
+  padding: 8px 16px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: bold;
 }
 
 .tab::after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -12px;
   left: 0;
   right: 0;
   height: 2px;
@@ -135,7 +136,7 @@ const perks = computed(() => store.perks)
 }
 
 .tab:hover {
-  color: var(--gd);
+  color: var(--g);
 }
 
 .tab.active {
@@ -158,22 +159,22 @@ const perks = computed(() => store.perks)
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 6px;
+  padding-right: 8px;
 }
 
 .scrollable::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .scrollable::-webkit-scrollbar-track {
   background: rgba(26, 90, 26, 0.2);
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid var(--gD);
 }
 
 .scrollable::-webkit-scrollbar-thumb {
   background: var(--gD);
-  border-radius: 3px;
+  border-radius: 4px;
   border: 1px solid var(--gd);
 }
 
@@ -181,23 +182,26 @@ const perks = computed(() => store.perks)
   background: var(--gd);
 }
 
-/* SPECIAL - 缩小尺寸 */
+/* SPECIAL - 固定高度 */
 .special-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  height: 100%;
 }
 
 .spec-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 10px;
+  padding: 10px 14px;
   background: rgba(26, 90, 26, 0.1);
   border: 1px solid var(--gD);
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  flex: 1;
+  min-height: 0;
 }
 
 .spec-item::before {
@@ -206,7 +210,7 @@ const perks = computed(() => store.perks)
   left: 0;
   top: 0;
   bottom: 0;
-  width: 2px;
+  width: 3px;
   background: var(--g);
   opacity: 0;
   transition: opacity 0.2s;
@@ -216,46 +220,47 @@ const perks = computed(() => store.perks)
 .spec-item.selected {
   background: rgba(139, 255, 139, 0.15);
   border-color: var(--g);
-  box-shadow: 0 0 10px rgba(139, 255, 139, 0.3);
+  box-shadow: 0 0 12px rgba(139, 255, 139, 0.3);
 }
 
 .spec-item.selected::before {
   opacity: 1;
-  box-shadow: 0 0 6px var(--g);
+  box-shadow: 0 0 8px var(--g);
 }
 
 .spec-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .spec-letter {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: bold;
   color: var(--g);
-  text-shadow: 0 0 8px rgba(139, 255, 139, 0.8);
-  width: 24px;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.8);
+  width: 32px;
   text-align: center;
 }
 
 .spec-name {
   color: var(--g);
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .spec-desc {
   color: var(--gd);
-  font-size: 10px;
-  margin-top: 1px;
+  font-size: 12px;
+  margin-top: 2px;
 }
 
 .spec-val {
-  font-size: 20px;
+  font-size: 28px;
   font-weight: bold;
   color: var(--g);
-  text-shadow: 0 0 10px rgba(139, 255, 139, 1);
-  min-width: 30px;
+  text-shadow: 0 0 15px rgba(139, 255, 139, 1);
+  min-width: 40px;
   text-align: center;
 }
 
@@ -266,18 +271,19 @@ const perks = computed(() => store.perks)
   align-items: center;
   justify-content: center;
   height: 100%;
-  gap: 8px;
+  gap: 12px;
 }
 
 .empty-text {
   color: var(--g);
-  font-size: 16px;
+  font-size: 20px;
   text-shadow: 0 0 10px rgba(139, 255, 139, 0.5);
+  font-weight: bold;
 }
 
 .empty-sub {
   color: var(--gd);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 /* Skills & Perks */
@@ -285,7 +291,7 @@ const perks = computed(() => store.perks)
 .perks-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .expandable {
@@ -300,7 +306,7 @@ const perks = computed(() => store.perks)
 .expandable.selected {
   background: rgba(139, 255, 139, 0.1);
   border-color: var(--g);
-  box-shadow: 0 0 10px rgba(139, 255, 139, 0.2);
+  box-shadow: 0 0 12px rgba(139, 255, 139, 0.2);
 }
 
 .expandable.selected .exp-header {
@@ -311,22 +317,23 @@ const perks = computed(() => store.perks)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
+  padding: 12px 14px;
   transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .exp-name {
   color: var(--g);
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .exp-meta {
   color: var(--gd);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .exp-details {
-  padding: 0 10px;
+  padding: 0 14px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s;
@@ -335,26 +342,114 @@ const perks = computed(() => store.perks)
 }
 
 .expandable.selected .exp-details {
-  padding: 8px 10px;
-  max-height: 150px;
+  padding: 12px 14px;
+  max-height: 200px;
   opacity: 1;
   border-top-color: var(--gD);
 }
 
 .exp-desc {
   color: var(--gd);
-  font-size: 11px;
-  line-height: 1.5;
-  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
 }
 
 .exp-effects {
   color: var(--g);
-  font-size: 10px;
+  font-size: 13px;
 }
 
 .exp-effects::before {
   content: '效果: ';
   color: var(--gd);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+  .tabs {
+    gap: 6px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+
+  .tab {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .spec-letter {
+    font-size: 20px;
+    width: 28px;
+  }
+
+  .spec-name {
+    font-size: 14px;
+  }
+
+  .spec-desc {
+    font-size: 11px;
+  }
+
+  .spec-val {
+    font-size: 24px;
+  }
+
+  .empty-text {
+    font-size: 18px;
+  }
+
+  .empty-sub {
+    font-size: 12px;
+  }
+
+  .exp-name {
+    font-size: 14px;
+  }
+
+  .exp-desc {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    gap: 4px;
+    padding: 8px 0;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  .spec-item {
+    padding: 8px 10px;
+  }
+
+  .spec-letter {
+    font-size: 18px;
+    width: 24px;
+  }
+
+  .spec-name {
+    font-size: 13px;
+  }
+
+  .spec-desc {
+    font-size: 10px;
+  }
+
+  .spec-val {
+    font-size: 20px;
+  }
+
+  .exp-header {
+    padding: 10px 12px;
+  }
+
+  .exp-name {
+    font-size: 13px;
+  }
 }
 </style>
