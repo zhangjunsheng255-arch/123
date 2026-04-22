@@ -126,11 +126,14 @@ onUnmounted(() => {
 <style scoped>
 .pipboy-container {
   width: 100%;
-  height: 100%;
-  min-height: 500px;
+  /* 固定高度：顶部栏约80px + SPECIAL内容约400px + 边距 */
+  height: 520px;
+  min-height: 520px;
+  max-height: 520px;
   display: flex;
   flex-direction: column;
   font-family: 'Share Tech Mono', monospace;
+  overflow: hidden;
 }
 
 .bezel {
@@ -331,7 +334,9 @@ onUnmounted(() => {
 /* 响应式适配 */
 @media (max-width: 768px) {
   .pipboy-container {
-    min-height: 400px;
+    height: 480px;
+    min-height: 480px;
+    max-height: 480px;
   }
 
   .sidebar {
@@ -354,6 +359,12 @@ onUnmounted(() => {
 }
 
 @media (max-width: 480px) {
+  .pipboy-container {
+    height: 450px;
+    min-height: 450px;
+    max-height: 450px;
+  }
+
   .bezel {
     padding: 6px;
   }

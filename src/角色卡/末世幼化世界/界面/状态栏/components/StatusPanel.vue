@@ -3,13 +3,13 @@
     <!-- Tab 导航 -->
     <div class="tabs">
       <div class="tab" :class="{ active: activeTab === 'special' }" @click="activeTab = 'special'">
-        SPECIAL
+        属性
       </div>
       <div class="tab" :class="{ active: activeTab === 'skills' }" @click="activeTab = 'skills'">
         技能
       </div>
       <div class="tab" :class="{ active: activeTab === 'perks' }" @click="activeTab = 'perks'">
-        PERK
+        专长
       </div>
     </div>
 
