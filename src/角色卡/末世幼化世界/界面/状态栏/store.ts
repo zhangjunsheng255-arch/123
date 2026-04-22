@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 // ==========================================
-// 类型定义
+// 类型定义 - 严格匹配 schema.json 和 initvar.yaml
 // ==========================================
 interface WorldData {
   时间?: {
@@ -28,33 +28,34 @@ interface SpecialAttr {
 }
 
 interface Skill {
-  值?: number
   描述?: string
-  效果?: string
 }
 
 interface Perk {
-  等级?: number
   描述?: string
-  效果?: string
 }
 
+// 严格匹配 initvar.yaml 的结构
 interface MvuStatData {
   世界?: WorldData
   主角?: {
     HP?: StatPool
     AP?: StatPool
-    等级?: number
-    瓶盖?: number
-    负重?: StatPool
-    SPECIAL?: {
-      力量?: SpecialAttr
-      感知?: SpecialAttr
-      耐力?: SpecialAttr
-      魅力?: SpecialAttr
-      智力?: SpecialAttr
-      敏捷?: SpecialAttr
-      幸运?: SpecialAttr
+    当前等级?: number
+    经验值?: number
+    晶核数量?: number
+    人物姓名?: string
+    人物年龄?: number
+  }
+  状态?: {
+    属性点?: {
+      力量?: number
+      感知?: number
+      耐力?: number
+      魅力?: number
+      智力?: number
+      敏捷?: number
+      幸运?: number
     }
     技能?: Record<string, Skill>
     专长?: Record<string, Perk>
@@ -91,92 +92,79 @@ export const useStatusStore = defineStore('status', () => {
   }
 
   // ==========================================
-  // 计算属性 - 从 MVU 数据读取
+  // 计算属性 - 严格匹配 initvar.yaml 的变量路径
   // ==========================================
 
-  // HP - 使用主角.HP.当前和主角.HP.上限
+  // HP - 主角.HP.当前/上限
   const hpCurrent = computed(() => mvuData.value?.主角?.HP?.当前 ?? 100)
   const hpMax = computed(() => mvuData.value?.主角?.HP?.上限 ?? 100)
   const hpPercent = computed(() => Math.min(100, Math.max(0, (hpCurrent.value / hpMax.value) * 100)))
 
-  // AP - 使用主角.AP.当前和主角.AP.上限
+  // AP - 主角.AP.当前/上限
   const apCurrent = computed(() => mvuData.value?.主角?.AP?.当前 ?? 50)
   const apMax = computed(() => mvuData.value?.主角?.AP?.上限 ?? 50)
   const apPercent = computed(() => Math.min(100, Math.max(0, (apCurrent.value / apMax.value) * 100)))
 
-  // 等级
-  const level = computed(() => mvuData.value?.主角?.等级 ?? 1)
+  // 等级 - 主角.当前等级
+  const level = computed(() => mvuData.value?.主角?.当前等级 ?? 1)
 
-  // 瓶盖
-  const caps = computed(() => mvuData.value?.主角?.瓶盖 ?? 0)
+  // 晶核 - 主角.晶核数量 (不是瓶盖)
+  const caps = computed(() => mvuData.value?.主角?.晶核数量 ?? 0)
 
-  // 负重
-  const weightCurrent = computed(() => mvuData.value?.主角?.负重?.当前 ?? 0)
-  const weightMax = computed(() => mvuData.value?.主角?.负重?.上限 ?? 100)
-
-  // 显示的时间
+  // 显示的时间 - 世界.时间.时刻
   const displayTime = computed(() => {
     return mvuData.value?.世界?.时间?.时刻 ?? '08:00'
   })
 
-  // 显示的地点（区域 + 具体地点）
+  // 显示的地点 - 世界.当前位置.区域/具体地点
   const displayLocation = computed(() => {
     const region = mvuData.value?.世界?.当前位置?.区域 ?? '荒野'
     const location = mvuData.value?.世界?.当前位置?.具体地点 ?? '未知地点'
     return `${region}·${location}`
   })
 
-  // 显示的时刻/阶段
+  // 显示的时刻/阶段 - 世界.时间.阶段
   const displayPeriod = computed(() => {
-    return mvuData.value?.世界?.时间?.阶段 ?? '早晨'
+    return mvuData.value?.世界?.时间?.阶段 ?? '上午'
   })
 
-  // SPECIAL 属性
+  // SPECIAL 属性 - 状态.属性点.xxx (不是主角.SPECIAL)
   const specialAttrs = computed(() => {
-    const special = mvuData.value?.主角?.SPECIAL
+    const attrPoints = mvuData.value?.状态?.属性点
     return SPECIAL_DEFS.map(def => ({
       key: def.key,
       letter: def.letter,
       name: def.name,
-      desc: special?.[def.key as keyof typeof special]?.描述 ?? def.desc,
-      value: special?.[def.key as keyof typeof special]?.值 ?? 5,
+      desc: def.desc,
+      value: attrPoints?.[def.key as keyof typeof attrPoints] ?? 5,
     }))
   })
 
-  // 技能 - 减少默认数量
+  // 技能 - 状态.技能 (默认为空对象)
   const skills = computed(() => {
-    const skillsData = mvuData.value?.主角?.技能
-    if (!skillsData) {
-      // 默认只有3个技能
-      return [
-        { name: '小型枪械', value: 50, desc: '使用手枪、步枪等小型武器的技能', effects: '每点提升5%命中率' },
-        { name: '口才', value: 50, desc: '通过对话影响他人的技能', effects: '每点提升5%对话成功率' },
-        { name: '黑客', value: 50, desc: '入侵计算机终端的技能', effects: '每点提升5%黑客成功率' },
-      ]
+    const skillsData = mvuData.value?.状态?.技能
+    if (!skillsData || Object.keys(skillsData).length === 0) {
+      return [] // 默认空数组，不显示任何技能
     }
     return Object.entries(skillsData).map(([name, data]) => ({
       name,
-      value: data.值 ?? 50,
+      value: 0, // 技能没有数值，只有描述
       desc: data.描述 ?? '',
-      effects: data.效果 ?? '',
+      effects: '',
     }))
   })
 
-  // 专长 - 减少默认数量
+  // 专长 - 状态.专长 (默认为空对象)
   const perks = computed(() => {
-    const perksData = mvuData.value?.主角?.专长
-    if (!perksData) {
-      // 默认只有2个专长
-      return [
-        { name: '独行侠', rank: 1, desc: '没有同伴时获得加成', effects: '伤害+10%' },
-        { name: '搜刮者', rank: 1, desc: '更容易找到稀有物品', effects: '找到稀有物品几率+25%' },
-      ]
+    const perksData = mvuData.value?.状态?.专长
+    if (!perksData || Object.keys(perksData).length === 0) {
+      return [] // 默认空数组，不显示任何专长
     }
     return Object.entries(perksData).map(([name, data]) => ({
       name,
-      rank: data.等级 ?? 1,
+      rank: 1, // 专长没有等级，只有描述
       desc: data.描述 ?? '',
-      effects: data.效果 ?? '',
+      effects: '',
     }))
   })
 
@@ -192,8 +180,6 @@ export const useStatusStore = defineStore('status', () => {
     apPercent,
     level,
     caps,
-    weightCurrent,
-    weightMax,
     displayTime,
     displayLocation,
     displayPeriod,

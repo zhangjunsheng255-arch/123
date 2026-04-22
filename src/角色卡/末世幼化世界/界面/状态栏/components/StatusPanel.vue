@@ -32,17 +32,19 @@
 
     <!-- 技能 -->
     <div v-if="activeTab === 'skills'" class="tab-content">
-      <div class="skills-list scrollable">
+      <div v-if="skills.length === 0" class="empty-message">
+        <div class="empty-text">暂无技能</div>
+        <div class="empty-sub">通过剧情发展获得技能</div>
+      </div>
+      <div v-else class="skills-list scrollable">
         <div v-for="skill in skills" :key="skill.name" class="expandable"
           :class="{ selected: selectedSkill === skill.name }"
           @click="selectedSkill = selectedSkill === skill.name ? null : skill.name">
           <div class="exp-header">
             <span class="exp-name">{{ skill.name }}</span>
-            <span class="exp-meta">{{ skill.value }}</span>
           </div>
           <div class="exp-details" v-if="selectedSkill === skill.name">
             <div class="exp-desc">{{ skill.desc }}</div>
-            <div class="exp-effects">{{ skill.effects }}</div>
           </div>
         </div>
       </div>
@@ -50,17 +52,19 @@
 
     <!-- 专长 -->
     <div v-if="activeTab === 'perks'" class="tab-content">
-      <div class="perks-list scrollable">
+      <div v-if="perks.length === 0" class="empty-message">
+        <div class="empty-text">暂无专长</div>
+        <div class="empty-sub">通过剧情发展获得专长</div>
+      </div>
+      <div v-else class="perks-list scrollable">
         <div v-for="perk in perks" :key="perk.name" class="expandable"
           :class="{ selected: selectedPerk === perk.name }"
           @click="selectedPerk = selectedPerk === perk.name ? null : perk.name">
           <div class="exp-header">
             <span class="exp-name">{{ perk.name }}</span>
-            <span class="exp-meta">Rank {{ perk.rank }}</span>
           </div>
           <div class="exp-details" v-if="selectedPerk === perk.name">
             <div class="exp-desc">{{ perk.desc }}</div>
-            <div class="exp-effects">{{ perk.effects }}</div>
           </div>
         </div>
       </div>
@@ -253,6 +257,27 @@ const perks = computed(() => store.perks)
   text-shadow: 0 0 10px rgba(139, 255, 139, 1);
   min-width: 30px;
   text-align: center;
+}
+
+/* 空状态提示 */
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+}
+
+.empty-text {
+  color: var(--g);
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(139, 255, 139, 0.5);
+}
+
+.empty-sub {
+  color: var(--gd);
+  font-size: 11px;
 }
 
 /* Skills & Perks */

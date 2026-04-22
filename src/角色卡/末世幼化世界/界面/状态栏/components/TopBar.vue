@@ -13,7 +13,7 @@
         </div>
         <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
       </div>
-      
+
       <!-- AP -->
       <div class="stat-row">
         <label>AP</label>
@@ -26,8 +26,8 @@
         <span class="val">{{ apCurrent }}/{{ apMax }}</span>
       </div>
     </div>
-    
-    <!-- 中间：等级/位置/瓶盖/负重 -->
+
+    <!-- 中间：等级/晶核/位置 -->
     <div class="center-section">
       <div class="info-row">
         <span class="info-item">
@@ -35,12 +35,8 @@
           <span class="val">{{ level }}</span>
         </span>
         <span class="info-item">
-          <label>CAPS</label>
+          <label>晶核</label>
           <span class="val">{{ caps }}</span>
-        </span>
-        <span class="info-item">
-          <label>负重</label>
-          <span class="val">{{ weightCurrent }}/{{ weightMax }}</span>
         </span>
       </div>
       <div class="location-row">
@@ -48,7 +44,7 @@
         <span class="location-val">{{ displayLocation }}</span>
       </div>
     </div>
-    
+
     <!-- 右侧：时间 -->
     <div class="right-section">
       <span class="time-val">{{ displayTime }}</span>
@@ -74,8 +70,6 @@ const apPercent = computed(() => store.apPercent)
 // 其他状态
 const level = computed(() => store.level)
 const caps = computed(() => store.caps)
-const weightCurrent = computed(() => store.weightCurrent)
-const weightMax = computed(() => store.weightMax)
 const displayTime = computed(() => store.displayTime)
 const displayLocation = computed(() => store.displayLocation)
 const displayPeriod = computed(() => store.displayPeriod)
