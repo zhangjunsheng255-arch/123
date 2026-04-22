@@ -2,33 +2,22 @@
   <div class="stats-panel">
     <!-- Tab 导航 -->
     <div class="tabs">
-      <div 
-        class="tab" 
-        :class="{ active: activeTab === 'special' }"
-        @click="activeTab = 'special'"
-      >SPECIAL</div>
-      <div 
-        class="tab" 
-        :class="{ active: activeTab === 'skills' }"
-        @click="activeTab = 'skills'"
-      >技能</div>
-      <div 
-        class="tab" 
-        :class="{ active: activeTab === 'perks' }"
-        @click="activeTab = 'perks'"
-      >PERK</div>
+      <div class="tab" :class="{ active: activeTab === 'special' }" @click="activeTab = 'special'">
+        SPECIAL
+      </div>
+      <div class="tab" :class="{ active: activeTab === 'skills' }" @click="activeTab = 'skills'">
+        技能
+      </div>
+      <div class="tab" :class="{ active: activeTab === 'perks' }" @click="activeTab = 'perks'">
+        PERK
+      </div>
     </div>
-    
+
     <!-- SPECIAL 属性 -->
     <div v-if="activeTab === 'special'" class="tab-content">
-      <div class="special-list">
-        <div 
-          v-for="attr in specialAttrs" 
-          :key="attr.key"
-          class="spec-item"
-          :class="{ selected: selectedSpecial === attr.key }"
-          @click="selectedSpecial = attr.key"
-        >
+      <div class="special-list scrollable">
+        <div v-for="attr in specialAttrs" :key="attr.key" class="spec-item"
+          :class="{ selected: selectedSpecial === attr.key }" @click="selectedSpecial = attr.key">
           <div class="spec-info">
             <div class="spec-letter">{{ attr.letter }}</div>
             <div class="spec-details">
@@ -40,17 +29,13 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 技能 -->
     <div v-if="activeTab === 'skills'" class="tab-content">
       <div class="skills-list scrollable">
-        <div 
-          v-for="skill in skills" 
-          :key="skill.name"
-          class="expandable"
+        <div v-for="skill in skills" :key="skill.name" class="expandable"
           :class="{ selected: selectedSkill === skill.name }"
-          @click="selectedSkill = selectedSkill === skill.name ? null : skill.name"
-        >
+          @click="selectedSkill = selectedSkill === skill.name ? null : skill.name">
           <div class="exp-header">
             <span class="exp-name">{{ skill.name }}</span>
             <span class="exp-meta">{{ skill.value }}</span>
@@ -62,17 +47,13 @@
         </div>
       </div>
     </div>
-    
+
     <!-- 专长 -->
     <div v-if="activeTab === 'perks'" class="tab-content">
       <div class="perks-list scrollable">
-        <div 
-          v-for="perk in perks" 
-          :key="perk.name"
-          class="expandable"
+        <div v-for="perk in perks" :key="perk.name" class="expandable"
           :class="{ selected: selectedPerk === perk.name }"
-          @click="selectedPerk = selectedPerk === perk.name ? null : perk.name"
-        >
+          @click="selectedPerk = selectedPerk === perk.name ? null : perk.name">
           <div class="exp-header">
             <span class="exp-name">{{ perk.name }}</span>
             <span class="exp-meta">Rank {{ perk.rank }}</span>
@@ -113,20 +94,22 @@ const perks = computed(() => store.perks)
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .tabs {
   display: flex;
   gap: 5px;
-  padding: 12px 0;
+  padding: 8px 0;
   border-bottom: 2px solid var(--gD);
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .tab {
   color: var(--gd);
-  font-size: 14px;
-  padding: 6px 16px;
+  font-size: 13px;
+  padding: 5px 12px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -137,7 +120,7 @@ const perks = computed(() => store.perks)
 .tab::after {
   content: '';
   position: absolute;
-  bottom: -14px;
+  bottom: -10px;
   left: 0;
   right: 0;
   height: 2px;
@@ -163,98 +146,15 @@ const perks = computed(() => store.perks)
 .tab-content {
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
-/* SPECIAL */
-.special-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.spec-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: rgba(26, 90, 26, 0.1);
-  border: 1px solid var(--gD);
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.spec-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--g);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.spec-item:hover,
-.spec-item.selected {
-  background: rgba(139, 255, 139, 0.15);
-  border-color: var(--g);
-  box-shadow: 0 0 15px rgba(139, 255, 139, 0.3);
-}
-
-.spec-item.selected::before {
-  opacity: 1;
-  box-shadow: 0 0 8px var(--g);
-}
-
-.spec-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.spec-letter {
-  font-size: 28px;
-  font-weight: bold;
-  color: var(--g);
-  text-shadow: 0 0 12px rgba(139, 255, 139, 0.8);
-  width: 35px;
-  text-align: center;
-}
-
-.spec-name {
-  color: var(--g);
-  font-size: 16px;
-}
-
-.spec-desc {
-  color: var(--gd);
-  font-size: 11px;
-  margin-top: 2px;
-}
-
-.spec-val {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--g);
-  text-shadow: 0 0 15px rgba(139, 255, 139, 1);
-  min-width: 45px;
-  text-align: center;
-}
-
-/* Skills & Perks */
-.skills-list,
-.perks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 100%;
-  overflow-y: auto;
-}
-
+/* 滚动区域 */
 .scrollable {
-  padding-right: 8px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
 }
 
 .scrollable::-webkit-scrollbar {
@@ -277,6 +177,92 @@ const perks = computed(() => store.perks)
   background: var(--gd);
 }
 
+/* SPECIAL - 缩小尺寸 */
+.special-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spec-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: rgba(26, 90, 26, 0.1);
+  border: 1px solid var(--gD);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.spec-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--g);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.spec-item:hover,
+.spec-item.selected {
+  background: rgba(139, 255, 139, 0.15);
+  border-color: var(--g);
+  box-shadow: 0 0 10px rgba(139, 255, 139, 0.3);
+}
+
+.spec-item.selected::before {
+  opacity: 1;
+  box-shadow: 0 0 6px var(--g);
+}
+
+.spec-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spec-letter {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--g);
+  text-shadow: 0 0 8px rgba(139, 255, 139, 0.8);
+  width: 24px;
+  text-align: center;
+}
+
+.spec-name {
+  color: var(--g);
+  font-size: 13px;
+}
+
+.spec-desc {
+  color: var(--gd);
+  font-size: 10px;
+  margin-top: 1px;
+}
+
+.spec-val {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--g);
+  text-shadow: 0 0 10px rgba(139, 255, 139, 1);
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Skills & Perks */
+.skills-list,
+.perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .expandable {
   background: rgba(26, 90, 26, 0.08);
   border: 1px solid transparent;
@@ -289,7 +275,7 @@ const perks = computed(() => store.perks)
 .expandable.selected {
   background: rgba(139, 255, 139, 0.1);
   border-color: var(--g);
-  box-shadow: 0 0 12px rgba(139, 255, 139, 0.2);
+  box-shadow: 0 0 10px rgba(139, 255, 139, 0.2);
 }
 
 .expandable.selected .exp-header {
@@ -300,22 +286,22 @@ const perks = computed(() => store.perks)
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 8px 10px;
   transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .exp-name {
   color: var(--g);
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .exp-meta {
   color: var(--gd);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .exp-details {
-  padding: 0 14px;
+  padding: 0 10px;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s;
@@ -324,22 +310,22 @@ const perks = computed(() => store.perks)
 }
 
 .expandable.selected .exp-details {
-  padding: 12px 14px;
-  max-height: 200px;
+  padding: 8px 10px;
+  max-height: 150px;
   opacity: 1;
   border-top-color: var(--gD);
 }
 
 .exp-desc {
   color: var(--gd);
-  font-size: 13px;
-  line-height: 1.6;
-  margin-bottom: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-bottom: 6px;
 }
 
 .exp-effects {
   color: var(--g);
-  font-size: 12px;
+  font-size: 10px;
 }
 
 .exp-effects::before {

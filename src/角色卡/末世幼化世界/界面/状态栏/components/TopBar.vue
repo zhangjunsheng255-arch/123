@@ -1,55 +1,56 @@
 <template>
   <div class="top-bar">
-    <!-- HP -->
-    <div class="stat-row">
-      <label>HP</label>
-      <div class="bar-wrap">
-        <div class="bar" :style="{ width: hpPercent + '%' }"></div>
-        <div class="segs">
-          <div class="seg" v-for="i in 10" :key="i"></div>
+    <!-- 左侧：HP/AP -->
+    <div class="left-section">
+      <!-- HP -->
+      <div class="stat-row">
+        <label>HP</label>
+        <div class="bar-wrap">
+          <div class="bar" :style="{ width: hpPercent + '%' }"></div>
+          <div class="segs">
+            <div class="seg" v-for="i in 10" :key="i"></div>
+          </div>
         </div>
+        <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
       </div>
-      <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
-    </div>
-
-    <!-- AP -->
-    <div class="stat-row">
-      <label>AP</label>
-      <div class="bar-wrap">
-        <div class="bar" :style="{ width: apPercent + '%' }"></div>
-        <div class="segs">
-          <div class="seg" v-for="i in 10" :key="i"></div>
+      
+      <!-- AP -->
+      <div class="stat-row">
+        <label>AP</label>
+        <div class="bar-wrap">
+          <div class="bar" :style="{ width: apPercent + '%' }"></div>
+          <div class="segs">
+            <div class="seg" v-for="i in 10" :key="i"></div>
+          </div>
         </div>
+        <span class="val">{{ apCurrent }}/{{ apMax }}</span>
       </div>
-      <span class="val">{{ apCurrent }}/{{ apMax }}</span>
     </div>
-
-    <!-- 等级 -->
-    <div class="info-row">
-      <label>LEVEL</label>
-      <span class="val">{{ level }}</span>
+    
+    <!-- 中间：等级/位置/瓶盖/负重 -->
+    <div class="center-section">
+      <div class="info-row">
+        <span class="info-item">
+          <label>LEVEL</label>
+          <span class="val">{{ level }}</span>
+        </span>
+        <span class="info-item">
+          <label>CAPS</label>
+          <span class="val">{{ caps }}</span>
+        </span>
+        <span class="info-item">
+          <label>负重</label>
+          <span class="val">{{ weightCurrent }}/{{ weightMax }}</span>
+        </span>
+      </div>
+      <div class="location-row">
+        <label>位置</label>
+        <span class="location-val">{{ displayLocation }}</span>
+      </div>
     </div>
-
-    <!-- 位置 -->
-    <div class="info-row">
-      <label>位置</label>
-      <span class="val">{{ displayLocation }}</span>
-    </div>
-
-    <!-- 瓶盖 -->
-    <div class="info-row">
-      <label>CAPS</label>
-      <span class="val">{{ caps }}</span>
-    </div>
-
-    <!-- 负重 -->
-    <div class="info-row">
-      <label>负重</label>
-      <span class="val">{{ weightCurrent }}/{{ weightMax }}</span>
-    </div>
-
-    <!-- 时间 -->
-    <div class="time-section">
+    
+    <!-- 右侧：时间 -->
+    <div class="right-section">
       <span class="time-val">{{ displayTime }}</span>
       <span class="period-val">{{ displayPeriod }}</span>
     </div>
@@ -83,29 +84,39 @@ const displayPeriod = computed(() => store.displayPeriod)
 <style scoped>
 .top-bar {
   display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  padding: 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
   border-bottom: 2px solid var(--gD);
+  gap: 15px;
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 160px;
+  flex-shrink: 0;
 }
 
 .stat-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 140px;
+  align-items: center;
+  gap: 8px;
 }
 
 .stat-row label {
   color: var(--gd);
   font-size: 11px;
   text-transform: uppercase;
+  min-width: 25px;
 }
 
 .bar-wrap {
-  height: 12px;
+  flex: 1;
+  height: 10px;
   background: #0a2a0a;
-  border: 2px solid var(--gD);
+  border: 1px solid var(--gD);
   position: relative;
   overflow: hidden;
 }
@@ -113,7 +124,7 @@ const displayPeriod = computed(() => store.displayPeriod)
 .bar {
   height: 100%;
   background: linear-gradient(90deg, var(--g) 0%, var(--gd) 100%);
-  box-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+  box-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 }
@@ -142,35 +153,71 @@ const displayPeriod = computed(() => store.displayPeriod)
 
 .val {
   color: var(--g);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
-  text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
+  text-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
+  min-width: 50px;
+  text-align: right;
+}
+
+.center-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 .info-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 80px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-.info-row label {
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-item label {
   color: var(--gd);
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
 }
 
-.time-section {
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-row label {
+  color: var(--gd);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.location-val {
+  color: var(--g);
+  font-size: 12px;
+  text-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.right-section {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
-  margin-left: auto;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .time-val {
   color: var(--g);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   letter-spacing: 1px;
   text-shadow: 0 0 10px rgba(139, 255, 139, 0.6);
@@ -178,6 +225,6 @@ const displayPeriod = computed(() => store.displayPeriod)
 
 .period-val {
   color: var(--gd);
-  font-size: 11px;
+  font-size: 10px;
 }
 </style>
