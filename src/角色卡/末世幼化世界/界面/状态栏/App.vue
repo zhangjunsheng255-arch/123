@@ -12,12 +12,13 @@
           </div>
         </div>
 
+        <!-- 顶部状态栏 -->
+        <TopBar />
+
         <!-- 主布局：左侧菜单 + 右侧内容 -->
         <div class="main-layout">
           <!-- 左侧菜单 -->
           <div class="sidebar">
-            <StatusPanel />
-            
             <!-- 菜单导航 -->
             <nav class="menu">
               <button
@@ -35,22 +36,9 @@
 
           <!-- 右侧内容区域 -->
           <div class="content">
-            <TabNav v-model="activeTab" :tabs="currentTabs" />
-            
             <div class="content-area">
               <div v-if="activeMenu === '状态'" class="tab-pane active">
-                <div v-if="activeTab === '属性'" class="panel">
-                  <div class="placeholder">
-                    <div class="placeholder-text">SPECIAL 属性</div>
-                    <div class="placeholder-sub">力量、感知、耐力、魅力、智力、敏捷、幸运</div>
-                  </div>
-                </div>
-                <div v-else-if="activeTab === '技能'" class="panel">
-                  <div class="placeholder">
-                    <div class="placeholder-text">技能列表</div>
-                    <div class="placeholder-sub">各种生存技能...</div>
-                  </div>
-                </div>
+                <StatusPanel />
               </div>
               <div v-else-if="activeMenu === '道具'" class="tab-pane active">
                 <div class="placeholder">
@@ -85,9 +73,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import StatusPanel from './components/StatusPanel.vue'
-import TabNav from './components/TabNav.vue'
+import TopBar from './components/TopBar.vue'
 import { useStatusStore } from './store'
 
 // ==========================================
@@ -112,30 +100,6 @@ const menuItems = [
 ]
 
 const activeMenu = ref('状态')
-
-// ==========================================
-// 标签导航（根据菜单动态变化）
-// ==========================================
-const statusTabs = [
-  { id: '属性', label: '属性' },
-  { id: '技能', label: '技能' },
-]
-
-const currentTabs = computed(() => {
-  if (activeMenu.value === '状态') {
-    return statusTabs
-  }
-  return []
-})
-
-const activeTab = ref('属性')
-
-// 切换菜单时重置标签
-watch(activeMenu, () => {
-  if (activeMenu.value === '状态') {
-    activeTab.value = '属性'
-  }
-})
 
 // ==========================================
 // 监听 MVU 变量更新
@@ -276,7 +240,7 @@ onUnmounted(() => {
 
 /* 左侧边栏 */
 .sidebar {
-  width: 180px;
+  width: 120px;
   display: flex;
   flex-direction: column;
   border-right: 2px solid #1a5a1a;
@@ -347,10 +311,12 @@ onUnmounted(() => {
 .tab-pane {
   display: none;
   animation: fadeEffect 0.3s;
+  height: 100%;
 }
 
 .tab-pane.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fadeEffect {
@@ -391,7 +357,7 @@ onUnmounted(() => {
 /* 响应式适配 */
 @media (max-width: 480px) {
   .sidebar {
-    width: 120px;
+    width: 100px;
   }
 
   .menu-item {
