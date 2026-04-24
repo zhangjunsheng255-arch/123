@@ -22,11 +22,6 @@ interface StatPool {
   上限?: number
 }
 
-interface SpecialAttr {
-  值?: number
-  描述?: string
-}
-
 interface Skill {
   描述?: string
 }
@@ -81,11 +76,58 @@ export const useStatusStore = defineStore('status', () => {
   const mvuData = ref<MvuStatData>({})
   const messageId = ref<number>(0)
 
-  // 获取 MVU 数据
+  // 获取 MVU 数据 - 尝试多种方式
   const fetchMvuData = () => {
     try {
-      const data = Mvu.getMvuData({ type: 'message', message_id: messageId.value })
-      mvuData.value = data?.stat_data ?? {}
+      // 首先尝试获取消息楼层变量
+      let data = null
+      try {
+        data = Mvu.getMvuData({ type: 'message', message_id: messageId.value })
+      } catch (e) {
+        console.log('消息楼层变量获取失败，尝试全局变量')
+      }
+
+      // 如果消息楼层没有数据，尝试全局变量
+      if (!data || !data.stat_data) {
+        try {
+          data = Mvu.getMvuData({ type: 'global' })
+        } catch (e) {
+          console.log('全局变量获取失败')
+        }
+      }
+
+      // 合并数据
+      const messageData = data?.stat_data ?? {}
+
+      // 同时获取全局变量中的技能和专长（可能存储在全局）
+      let globalData: MvuStatData = {}
+      try {
+        const global = Mvu.getMvuData({ type: 'global' })
+        globalData = global?.stat_data ?? {}
+      } catch (e) {
+        // 忽略错误
+      }
+
+      // 合并消息楼层和全局数据
+      mvuData.value = {
+        ...globalData,
+        ...messageData,
+        状态: {
+          ...globalData?.状态,
+          ...messageData?.状态,
+          // 合并技能和专长
+          技能: {
+            ...globalData?.状态?.技能,
+            ...messageData?.状态?.技能,
+          },
+          专长: {
+            ...globalData?.状态?.专长,
+            ...messageData?.状态?.专长,
+          },
+        },
+      }
+
+      console.log('MVU 数据已更新:', mvuData.value)
     } catch (e) {
       console.error('获取 MVU 数据失败:', e)
     }
@@ -140,30 +182,32 @@ export const useStatusStore = defineStore('status', () => {
     }))
   })
 
-  // 技能 - 状态.技能 (默认为空对象)
+  // 技能 - 状态.技能 (合并全局和消息楼层)
   const skills = computed(() => {
     const skillsData = mvuData.value?.状态?.技能
+    console.log('技能数据:', skillsData)
     if (!skillsData || Object.keys(skillsData).length === 0) {
       return [] // 默认空数组，不显示任何技能
     }
     return Object.entries(skillsData).map(([name, data]) => ({
       name,
       value: 0, // 技能没有数值，只有描述
-      desc: data.描述 ?? '',
+      desc: data?.描述 ?? '',
       effects: '',
     }))
   })
 
-  // 专长 - 状态.专长 (默认为空对象)
+  // 专长 - 状态.专长 (合并全局和消息楼层)
   const perks = computed(() => {
     const perksData = mvuData.value?.状态?.专长
+    console.log('专长数据:', perksData)
     if (!perksData || Object.keys(perksData).length === 0) {
       return [] // 默认空数组，不显示任何专长
     }
     return Object.entries(perksData).map(([name, data]) => ({
       name,
       rank: 1, // 专长没有等级，只有描述
-      desc: data.描述 ?? '',
+      desc: data?.描述 ?? '',
       effects: '',
     }))
   })
