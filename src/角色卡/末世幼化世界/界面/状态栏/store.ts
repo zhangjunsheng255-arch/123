@@ -1,4 +1,4 @@
-import { defineMvuDataStore } from '@util/mvu'
-import { Schema } from '../../../schema'
+import { defineMvuDataStore } from '@util/mvu';
+import { Schema } from '../../../schema';
 
-export const useStatusStore = defineMvuDataStore(Schema, { type: 'message', message_id: getCurrentMessageId() });
+export const useStatusStore = defineMvuDataStore(Schema, { type: 'message' });

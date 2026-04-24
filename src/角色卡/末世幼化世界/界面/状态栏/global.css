@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 .card *,
 .card *::before,
@@ -13,6 +13,8 @@
   --gd: #4a9a4a;
   --gD: #1a5a1a;
   --r: #ff4d4d;
+  --bg-dark: #050a05;
+  --bg-panel: #0a150a;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
 }

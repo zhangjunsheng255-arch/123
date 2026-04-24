@@ -20,8 +20,13 @@
           <!-- 左侧菜单 -->
           <div class="sidebar">
             <nav class="menu">
-              <button v-for="item in menuItems" :key="item.id" class="menu-item"
-                :class="{ active: activeMenu === item.id }" @click="activeMenu = item.id">
+              <button
+                v-for="item in menuItems"
+                :key="item.id"
+                class="menu-item"
+                :class="{ active: activeMenu === item.id }"
+                @click="activeMenu = item.id"
+              >
                 <span class="menu-arrow">▶</span>
                 <span class="menu-label">{{ item.label }}</span>
               </button>
@@ -65,11 +70,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import TopBar from './components/TopBar.vue'
-import StatusPanel from './components/StatusPanel.vue'
+import { onMounted, ref } from 'vue';
+import TopBar from './components/TopBar.vue';
+import StatusPanel from './components/StatusPanel.vue';
 
-const isBooting = ref(true)
+const isBooting = ref(true);
 
 const menuItems = [
   { id: '状态', label: '状态' },
@@ -77,30 +82,18 @@ const menuItems = [
   { id: '数据', label: '数据' },
   { id: '地图', label: '地图' },
   { id: '广播', label: '广播' },
-]
+];
 
-const activeMenu = ref('状态')
+const activeMenu = ref('状态');
 
-let bootTimer: ReturnType<typeof setTimeout> | null = null
+let bootTimer: ReturnType<typeof setTimeout> | null = null;
 
 onMounted(() => {
   bootTimer = setTimeout(() => {
-    isBooting.value = false
-  }, 2500)
-})
+    isBooting.value = false;
+  }, 2500);
+});
 </script>
-
-<style>
-/* CSS 变量 */
-:root {
-  --g: #8BFF8B;
-  --gd: #4a9a4a;
-  --gD: #1a5a1a;
-  --r: #FF4D4D;
-  --bg-dark: #050a05;
-  --bg-panel: #0a150a;
-}
-</style>
 
 <style scoped>
 .pipboy-container {
@@ -242,7 +235,9 @@ onMounted(() => {
   background: rgba(139, 255, 139, 0.15);
   border-color: var(--g);
   color: var(--g);
-  box-shadow: 0 0 15px rgba(139, 255, 139, 0.2), inset 0 0 15px rgba(139, 255, 139, 0.05);
+  box-shadow:
+    0 0 15px rgba(139, 255, 139, 0.2),
+    inset 0 0 15px rgba(139, 255, 139, 0.05);
 }
 
 .menu-arrow {
