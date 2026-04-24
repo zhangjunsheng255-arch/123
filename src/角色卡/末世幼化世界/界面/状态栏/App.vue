@@ -65,12 +65,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import TopBar from './components/TopBar.vue'
 import StatusPanel from './components/StatusPanel.vue'
-import { useStatusStore } from './store'
 
-const store = useStatusStore()
 const isBooting = ref(true)
 
 const menuItems = [
@@ -83,31 +81,12 @@ const menuItems = [
 
 const activeMenu = ref('状态')
 
-let eventListener: EventOnReturn | null = null
 let bootTimer: ReturnType<typeof setTimeout> | null = null
 
 onMounted(() => {
-  try {
-    store.messageId = getCurrentMessageId()
-  } catch (e) {
-    console.error('获取消息楼层ID失败:', e)
-  }
-
-  store.fetchMvuData()
-  eventListener = eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, store.fetchMvuData)
-
   bootTimer = setTimeout(() => {
     isBooting.value = false
   }, 2500)
-})
-
-onUnmounted(() => {
-  if (eventListener) {
-    eventListener.stop()
-  }
-  if (bootTimer) {
-    clearTimeout(bootTimer)
-  }
 })
 </script>
 

@@ -59,20 +59,34 @@ import { useStatusStore } from '../store'
 
 const store = useStatusStore()
 
-// HP/AP
-const hpCurrent = computed(() => store.hpCurrent)
-const hpMax = computed(() => store.hpMax)
-const hpPercent = computed(() => store.hpPercent)
-const apCurrent = computed(() => store.apCurrent)
-const apMax = computed(() => store.apMax)
-const apPercent = computed(() => store.apPercent)
+// HP - 主角.HP.当前/上限
+const hpCurrent = computed(() => store.data?.主角?.HP?.当前 ?? 100)
+const hpMax = computed(() => store.data?.主角?.HP?.上限 ?? 100)
+const hpPercent = computed(() => Math.min(100, Math.max(0, (hpCurrent.value / hpMax.value) * 100)))
 
-// 其他状态
-const level = computed(() => store.level)
-const caps = computed(() => store.caps)
-const displayTime = computed(() => store.displayTime)
-const displayLocation = computed(() => store.displayLocation)
-const displayPeriod = computed(() => store.displayPeriod)
+// AP - 主角.AP.当前/上限
+const apCurrent = computed(() => store.data?.主角?.AP?.当前 ?? 50)
+const apMax = computed(() => store.data?.主角?.AP?.上限 ?? 50)
+const apPercent = computed(() => Math.min(100, Math.max(0, (apCurrent.value / apMax.value) * 100)))
+
+// 等级 - 主角.当前等级
+const level = computed(() => store.data?.主角?.当前等级 ?? 1)
+
+// 晶核 - 主角.晶核数量
+const caps = computed(() => store.data?.主角?.晶核数量 ?? 0)
+
+// 显示的时间 - 世界.时间.时刻
+const displayTime = computed(() => store.data?.世界?.时间?.时刻 ?? '08:00')
+
+// 显示的地点 - 世界.当前位置.区域/具体地点
+const displayLocation = computed(() => {
+  const region = store.data?.世界?.当前位置?.区域 ?? '荒野'
+  const location = store.data?.世界?.当前位置?.具体地点 ?? '未知地点'
+  return `${region}·${location}`
+})
+
+// 显示的时刻/阶段 - 世界.时间.阶段
+const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上午')
 </script>
 
 <style scoped>

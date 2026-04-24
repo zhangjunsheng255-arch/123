@@ -78,18 +78,60 @@ import { useStatusStore } from '../store'
 
 const store = useStatusStore()
 const activeTab = ref('special')
-const selectedSpecial = ref('S')
+const selectedSpecial = ref('力量')
 const selectedSkill = ref<string | null>(null)
 const selectedPerk = ref<string | null>(null)
 
+// SPECIAL 属性定义
+const SPECIAL_DEFS = [
+  { key: '力量', letter: 'S', name: '力量 Strength', desc: '近战伤害与负重能力' },
+  { key: '感知', letter: 'P', name: '感知 Perception', desc: '环境感知与VATS精度' },
+  { key: '耐力', letter: 'E', name: '耐力 Endurance', desc: '生命值与抗性' },
+  { key: '魅力', letter: 'C', name: '魅力 Charisma', desc: '对话与交易能力' },
+  { key: '智力', letter: 'I', name: '智力 Intelligence', desc: '经验获取与黑客' },
+  { key: '敏捷', letter: 'A', name: '敏捷 Agility', desc: '行动点数与潜行' },
+  { key: '幸运', letter: 'L', name: '幸运 Luck', desc: '暴击与随机事件' },
+]
+
 // SPECIAL 属性
-const specialAttrs = computed(() => store.specialAttrs)
+const specialAttrs = computed(() => {
+  const attrPoints = store.data?.状态?.属性点
+  return SPECIAL_DEFS.map(def => ({
+    key: def.key,
+    letter: def.letter,
+    name: def.name,
+    desc: def.desc,
+    value: attrPoints?.[def.key as keyof typeof attrPoints] ?? 5,
+  }))
+})
 
 // 技能
-const skills = computed(() => store.skills)
+const skills = computed(() => {
+  const skillsData = store.data?.状态?.技能
+  if (!skillsData || Object.keys(skillsData).length === 0) {
+    return []
+  }
+  return Object.entries(skillsData).map(([name, data]) => ({
+    name,
+    value: 0,
+    desc: data?.描述 ?? '',
+    effects: '',
+  }))
+})
 
 // 专长
-const perks = computed(() => store.perks)
+const perks = computed(() => {
+  const perksData = store.data?.状态?.专长
+  if (!perksData || Object.keys(perksData).length === 0) {
+    return []
+  }
+  return Object.entries(perksData).map(([name, data]) => ({
+    name,
+    rank: 1,
+    desc: data?.描述 ?? '',
+    effects: '',
+  }))
+})
 </script>
 
 <style scoped>
