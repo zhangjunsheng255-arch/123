@@ -212,8 +212,8 @@ const toggleExpand = (id: string) => {
 }
 .tab {
   color: var(--gd);
-  font-size: 20px;
-  padding: 10px 20px;
+  font-size: 12px;
+  padding: 6px 12px;
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
@@ -478,8 +478,8 @@ const toggleExpand = (id: string) => {
   }
 
   .tab {
-    font-size: 16px;
-    padding: 7px 14px;
+    font-size: 11px;
+    padding: 5px 10px;
   }
 
   .exp-header {
@@ -529,8 +529,8 @@ const toggleExpand = (id: string) => {
   }
 
   .tab {
-    font-size: 13px;
-    padding: 5px 10px;
+    font-size: 10px;
+    padding: 4px 8px;
   }
 
   .tab::after {
