@@ -2,22 +2,21 @@
   <div class="stats-panel">
     <!-- Tab 导航 -->
     <div class="tabs">
-      <div class="tab" :class="{ active: activeTab === 'special' }" @click="activeTab = 'special'">
-        属性
-      </div>
-      <div class="tab" :class="{ active: activeTab === 'skills' }" @click="activeTab = 'skills'">
-        技能
-      </div>
-      <div class="tab" :class="{ active: activeTab === 'perks' }" @click="activeTab = 'perks'">
-        专长
-      </div>
+      <div class="tab" :class="{ active: activeTab === 'special' }" @click="activeTab = 'special'">属性</div>
+      <div class="tab" :class="{ active: activeTab === 'skills' }" @click="activeTab = 'skills'">技能</div>
+      <div class="tab" :class="{ active: activeTab === 'perks' }" @click="activeTab = 'perks'">专长</div>
     </div>
 
     <!-- SPECIAL 属性 -->
     <div v-if="activeTab === 'special'" class="tab-content">
       <div class="special-list">
-        <div v-for="attr in specialAttrs" :key="attr.key" class="spec-item"
-          :class="{ selected: selectedSpecial === attr.key }" @click="selectedSpecial = attr.key">
+        <div
+          v-for="attr in specialAttrs"
+          :key="attr.key"
+          class="spec-item"
+          :class="{ selected: selectedSpecial === attr.key }"
+          @click="selectedSpecial = attr.key"
+        >
           <div class="spec-info">
             <div class="spec-letter">{{ attr.letter }}</div>
             <div class="spec-details">
@@ -37,13 +36,17 @@
         <div class="empty-sub">通过剧情发展获得技能</div>
       </div>
       <div v-else class="skills-list scrollable">
-        <div v-for="skill in skills" :key="skill.name" class="expandable"
+        <div
+          v-for="skill in skills"
+          :key="skill.name"
+          class="expandable"
           :class="{ selected: selectedSkill === skill.name }"
-          @click="selectedSkill = selectedSkill === skill.name ? null : skill.name">
+          @click="selectedSkill = selectedSkill === skill.name ? null : skill.name"
+        >
           <div class="exp-header">
             <span class="exp-name">{{ skill.name }}</span>
           </div>
-          <div class="exp-details" v-if="selectedSkill === skill.name">
+          <div class="exp-details" v-show="selectedSkill === skill.name">
             <div class="exp-desc">{{ skill.desc }}</div>
           </div>
         </div>
@@ -57,13 +60,17 @@
         <div class="empty-sub">通过剧情发展获得专长</div>
       </div>
       <div v-else class="perks-list scrollable">
-        <div v-for="perk in perks" :key="perk.name" class="expandable"
+        <div
+          v-for="perk in perks"
+          :key="perk.name"
+          class="expandable"
           :class="{ selected: selectedPerk === perk.name }"
-          @click="selectedPerk = selectedPerk === perk.name ? null : perk.name">
+          @click="selectedPerk = selectedPerk === perk.name ? null : perk.name"
+        >
           <div class="exp-header">
             <span class="exp-name">{{ perk.name }}</span>
           </div>
-          <div class="exp-details" v-if="selectedPerk === perk.name">
+          <div class="exp-details" v-show="selectedPerk === perk.name">
             <div class="exp-desc">{{ perk.desc }}</div>
           </div>
         </div>
@@ -73,14 +80,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useStatusStore } from '../store'
+import { computed, ref } from 'vue';
+import { useStatusStore } from '../store';
 
-const store = useStatusStore()
-const activeTab = ref('special')
-const selectedSpecial = ref('力量')
-const selectedSkill = ref<string | null>(null)
-const selectedPerk = ref<string | null>(null)
+const store = useStatusStore();
+const activeTab = ref('special');
+const selectedSpecial = ref('力量');
+const selectedSkill = ref<string | null>(null);
+const selectedPerk = ref<string | null>(null);
 
 // SPECIAL 属性定义
 const SPECIAL_DEFS = [
@@ -91,47 +98,47 @@ const SPECIAL_DEFS = [
   { key: '智力', letter: 'I', name: '智力 Intelligence', desc: '经验获取与黑客' },
   { key: '敏捷', letter: 'A', name: '敏捷 Agility', desc: '行动点数与潜行' },
   { key: '幸运', letter: 'L', name: '幸运 Luck', desc: '暴击与随机事件' },
-]
+];
 
 // SPECIAL 属性
 const specialAttrs = computed(() => {
-  const attrPoints = store.data?.状态?.属性点
+  const attrPoints = store.data?.状态?.属性点;
   return SPECIAL_DEFS.map(def => ({
     key: def.key,
     letter: def.letter,
     name: def.name,
     desc: def.desc,
     value: attrPoints?.[def.key as keyof typeof attrPoints] ?? 5,
-  }))
-})
+  }));
+});
 
 // 技能
 const skills = computed(() => {
-  const skillsData = store.data?.状态?.技能
+  const skillsData = store.data?.状态?.技能;
   if (!skillsData || Object.keys(skillsData).length === 0) {
-    return []
+    return [];
   }
   return Object.entries(skillsData).map(([name, data]) => ({
     name,
     value: 0,
     desc: data?.描述 ?? '',
     effects: '',
-  }))
-})
+  }));
+});
 
 // 专长
 const perks = computed(() => {
-  const perksData = store.data?.状态?.专长
+  const perksData = store.data?.状态?.专长;
   if (!perksData || Object.keys(perksData).length === 0) {
-    return []
+    return [];
   }
   return Object.entries(perksData).map(([name, data]) => ({
     name,
     rank: 1,
     desc: data?.描述 ?? '',
     effects: '',
-  }))
-})
+  }));
+});
 </script>
 
 <style scoped>
@@ -378,7 +385,9 @@ const perks = computed(() => {
   padding: 0 14px;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s;
+  transition:
+    max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.35s;
   opacity: 0;
   border-top: 1px solid transparent;
 }

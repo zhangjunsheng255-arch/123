@@ -2,65 +2,27 @@
   <div class="pipboy-container">
     <div class="bezel">
       <div class="screen">
-        <!-- 加载动画 -->
-        <div class="boot" :class="{ hide: !isBooting }">
-          <div class="boot-logo">▼▼▼</div>
-          <div class="boot-t">ROBCO INDUSTRIES (TM) TERMLINK PROTOCOL</div>
-          <div class="boot-t">LOADING PIP-BOY 3000 OS...</div>
-          <div class="boot-bar">
-            <div class="boot-fill"></div>
-          </div>
-        </div>
-
-        <!-- 顶部状态栏 -->
+        <BootScreen :visible="isBooting" />
         <TopBar />
-
-        <!-- 主布局：左侧菜单 + 右侧内容 -->
         <div class="main-layout">
-          <!-- 左侧菜单 -->
           <div class="sidebar">
-            <nav class="menu">
-              <button
-                v-for="item in menuItems"
-                :key="item.id"
-                class="menu-item"
-                :class="{ active: activeMenu === item.id }"
-                @click="activeMenu = item.id"
-              >
-                <span class="menu-arrow">▶</span>
-                <span class="menu-label">{{ item.label }}</span>
-              </button>
-            </nav>
+            <MenuNav v-model:current-menu="activeMenu" />
           </div>
-
-          <!-- 右侧内容区域 -->
           <div class="content">
-            <div v-if="activeMenu === '状态'" class="panel active">
+            <div v-if="activeMenu === 'status'" class="panel">
               <StatusPanel />
             </div>
-            <div v-else-if="activeMenu === '道具'" class="panel active">
-              <div class="placeholder">
-                <div class="placeholder-text">道具栏</div>
-                <div class="placeholder-sub">武器、装备、消耗品...</div>
-              </div>
+            <div v-else-if="activeMenu === 'inv'" class="panel">
+              <InventoryPanel :active="true" :stat-data="statData" />
             </div>
-            <div v-else-if="activeMenu === '数据'" class="panel active">
-              <div class="placeholder">
-                <div class="placeholder-text">数据面板</div>
-                <div class="placeholder-sub">任务、统计、笔记...</div>
-              </div>
+            <div v-else-if="activeMenu === 'data'" class="panel">
+              <DataPanel :active="true" :stat-data="statData" @request-data-page="activeMenu = 'data'" />
             </div>
-            <div v-else-if="activeMenu === '地图'" class="panel active">
-              <div class="placeholder">
-                <div class="placeholder-text">地图</div>
-                <div class="placeholder-sub">当前位置和地标...</div>
-              </div>
+            <div v-else-if="activeMenu === 'map'" class="panel">
+              <MapPanel :active="true" :stat-data="statData" />
             </div>
-            <div v-else-if="activeMenu === '广播'" class="panel active">
-              <div class="placeholder">
-                <div class="placeholder-text">广播</div>
-                <div class="placeholder-sub">可接收的电台频率...</div>
-              </div>
+            <div v-else-if="activeMenu === 'radio'" class="panel">
+              <RadioPanel :active="true" :stat-data="statData" />
             </div>
           </div>
         </div>
@@ -70,26 +32,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useStatusStore } from './store';
+import BootScreen from './components/BootScreen.vue';
 import TopBar from './components/TopBar.vue';
+import MenuNav from './components/MenuNav.vue';
 import StatusPanel from './components/StatusPanel.vue';
+import InventoryPanel from './components/InventoryPanel.vue';
+import DataPanel from './components/DataPanel.vue';
+import MapPanel from './components/MapPanel.vue';
+import RadioPanel from './components/RadioPanel.vue';
+
+const store = useStatusStore();
+const statData = computed(() => store.data);
 
 const isBooting = ref(true);
-
-const menuItems = [
-  { id: '状态', label: '状态' },
-  { id: '道具', label: '道具' },
-  { id: '数据', label: '数据' },
-  { id: '地图', label: '地图' },
-  { id: '广播', label: '广播' },
-];
-
-const activeMenu = ref('状态');
-
-let bootTimer: ReturnType<typeof setTimeout> | null = null;
+const activeMenu = ref('status');
 
 onMounted(() => {
-  bootTimer = setTimeout(() => {
+  setTimeout(() => {
     isBooting.value = false;
   }, 2500);
 });
@@ -98,7 +59,6 @@ onMounted(() => {
 <style scoped>
 .pipboy-container {
   width: 100%;
-  /* 固定高度：顶部栏约80px + SPECIAL内容约480px + 边距 */
   height: 600px;
   min-height: 600px;
   max-height: 600px;
@@ -127,63 +87,6 @@ onMounted(() => {
   flex-direction: column;
 }
 
-/* Boot Screen */
-.boot {
-  position: absolute;
-  inset: 0;
-  background: var(--bg-dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: opacity 0.5s ease;
-}
-
-.boot.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.boot-logo {
-  font-size: 28px;
-  color: var(--g);
-  margin-bottom: 16px;
-}
-
-.boot-t {
-  color: var(--gd);
-  font-size: 13px;
-  margin: 4px 0;
-  text-align: center;
-  padding: 0 20px;
-}
-
-.boot-bar {
-  width: 200px;
-  height: 3px;
-  background: var(--gD);
-  margin-top: 16px;
-  overflow: hidden;
-}
-
-.boot-fill {
-  height: 100%;
-  background: var(--g);
-  animation: boot 2.5s ease-out forwards;
-}
-
-@keyframes boot {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
-}
-
-/* 主布局 */
 .main-layout {
   flex: 1;
   display: flex;
@@ -191,7 +94,6 @@ onMounted(() => {
   min-height: 0;
 }
 
-/* 左侧边栏 */
 .sidebar {
   width: 120px;
   flex-shrink: 0;
@@ -199,58 +101,9 @@ onMounted(() => {
   flex-direction: column;
   border-right: 2px solid var(--gD);
   background: rgba(10, 30, 10, 0.3);
-}
-
-.menu {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   padding: 12px 10px;
-  gap: 8px;
 }
 
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--gd);
-  font-size: 16px;
-  font-family: 'Share Tech Mono', monospace;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-  font-weight: bold;
-}
-
-.menu-item:hover {
-  background: rgba(139, 255, 139, 0.1);
-  border-color: var(--gD);
-  color: var(--g);
-}
-
-.menu-item.active {
-  background: rgba(139, 255, 139, 0.15);
-  border-color: var(--g);
-  color: var(--g);
-  box-shadow:
-    0 0 15px rgba(139, 255, 139, 0.2),
-    inset 0 0 15px rgba(139, 255, 139, 0.05);
-}
-
-.menu-arrow {
-  font-size: 12px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.menu-item.active .menu-arrow {
-  opacity: 1;
-}
-
-/* 右侧内容区 */
 .content {
   flex: 1;
   display: flex;
@@ -261,15 +114,11 @@ onMounted(() => {
 }
 
 .panel {
-  display: none;
   flex: 1;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.panel.active {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
   animation: fadeEffect 0.3s;
 }
 
@@ -278,34 +127,12 @@ onMounted(() => {
     opacity: 0;
     transform: translateY(5px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  height: 100%;
-}
-
-.placeholder-text {
-  color: var(--g);
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.placeholder-sub {
-  color: var(--gd);
-  font-size: 14px;
-}
-
-/* 响应式适配 */
 @media (max-width: 768px) {
   .pipboy-container {
     height: 550px;
@@ -315,16 +142,7 @@ onMounted(() => {
 
   .sidebar {
     width: 100px;
-  }
-
-  .menu {
     padding: 10px 8px;
-    gap: 6px;
-  }
-
-  .menu-item {
-    padding: 10px 12px;
-    font-size: 15px;
   }
 
   .content {
@@ -345,33 +163,11 @@ onMounted(() => {
 
   .sidebar {
     width: 85px;
-  }
-
-  .menu {
     padding: 8px 6px;
-    gap: 5px;
-  }
-
-  .menu-item {
-    padding: 8px 10px;
-    font-size: 14px;
-    gap: 6px;
-  }
-
-  .menu-arrow {
-    font-size: 10px;
   }
 
   .content {
     padding: 8px;
-  }
-
-  .placeholder-text {
-    font-size: 16px;
-  }
-
-  .placeholder-sub {
-    font-size: 12px;
   }
 }
 </style>

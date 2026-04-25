@@ -123,17 +123,16 @@ watch(
 
 <style scoped>
 .page {
-  position: absolute;
-  inset: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
   transition:
     opacity 0.3s var(--ease),
     visibility 0.3s;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
 }
 .page.active {
   opacity: 1;
