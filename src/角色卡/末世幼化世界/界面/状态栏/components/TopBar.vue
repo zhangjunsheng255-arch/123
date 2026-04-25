@@ -190,14 +190,16 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
 @media (max-width: 768px) {
   .top-bar {
     padding: 10px 12px;
-    gap: 15px;
+    gap: 6px 10px;
     flex-wrap: wrap;
   }
 
   .left-section {
-    width: 100%;
+    width: auto;
+    flex: 1 1 0;
     flex-direction: row;
-    gap: 15px;
+    gap: 12px;
+    order: 0;
   }
 
   .stat-row {
@@ -205,23 +207,29 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   }
 
   .center-section {
+    flex: 1 1 100%;
+    min-width: 0;
     flex-direction: row;
     align-items: center;
-    gap: 15px;
-    width: calc(100% - 100px);
+    gap: 12px;
+    order: 2;
   }
 
   .info-row {
-    gap: 15px;
+    gap: 12px;
+    flex-shrink: 0;
   }
 
   .location-row {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
 
   .right-section {
-    width: 80px;
+    width: auto;
+    flex-shrink: 0;
+    order: 1;
   }
 
   .time-val {
@@ -232,7 +240,7 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
 @media (max-width: 480px) {
   .top-bar {
     padding: 8px 10px;
-    gap: 10px;
+    gap: 4px 8px;
   }
 
   .left-section {
@@ -240,18 +248,21 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   }
 
   .stat-row label {
-    font-size: 12px;
-    min-width: 25px;
+    font-size: 11px;
+    min-width: 22px;
   }
 
   .val {
     font-size: 12px;
-    min-width: 50px;
+    min-width: 0;
   }
 
   .center-section {
-    width: 100%;
-    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .info-row {
+    gap: 8px;
   }
 
   .info-item label,
@@ -263,15 +274,9 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
     font-size: 12px;
   }
 
-  .right-section {
-    width: auto;
-    flex-direction: row;
-    gap: 8px;
-    align-items: center;
-  }
-
   .time-val {
     font-size: 14px;
+    letter-spacing: 1px;
   }
 
   .period-val {
