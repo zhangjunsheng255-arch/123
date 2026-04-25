@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div id="p-inv" class="page" :class="{ active: active }">
     <div class="tabs">
       <div
@@ -14,25 +14,25 @@
     <div class="scrollable">
       <div v-for="tab in invTabs" :key="tab.id" v-show="invTab === tab.id" class="inv-section">
         <div
-          v-for="(item, name) in stat_data?.鑳屽寘?.[tab.key as keyof typeof stat_data.鑳屽寘] || {}"
+          v-for="(item, name) in stat_data?.背包?.[tab.key as keyof typeof stat_data.背包] || {}"
           :key="name"
           class="expandable"
           :class="{ selected: expandedItem === 'inv_' + name }"
           @click="toggleExpand('inv_' + name)"
         >
           <div class="exp-header">
-            <span class="exp-name">{{ name }} ({{ (item as any).鏁伴噺 || 1 }})</span>
+            <span class="exp-name">{{ name }} ({{ (item as any).数量 || 1 }})</span>
             <span class="exp-meta">
-              <span v-if="(item as any).鍝佽川">{{ (item as any).鍝佽川 }}</span>
-              <span v-if="(item as any).绫诲瀷">{{ (item as any).绫诲瀷 }}</span>
-              <span v-if="(item as any).閮ㄤ綅">{{ (item as any).閮ㄤ綅 }}</span>
+              <span v-if="(item as any).品质">{{ (item as any).品质 }}</span>
+              <span v-if="(item as any).类型">{{ (item as any).类型 }}</span>
+              <span v-if="(item as any).部位">{{ (item as any).部位 }}</span>
             </span>
           </div>
           <div class="exp-details">
             <div class="exp-details-inner">
               <div class="exp-details-content">
-                <div class="exp-desc">{{ (item as any).鎻忚堪 }}</div>
-                <div v-if="(item as any).鏁堟灉" class="exp-effects">{{ (item as any).鏁堟灉 }}</div>
+                <div class="exp-desc">{{ (item as any).描述 }}</div>
+                <div v-if="(item as any).效果" class="exp-effects">{{ (item as any).效果 }}</div>
               </div>
             </div>
           </div>
@@ -54,10 +54,10 @@ const invTab = ref('weapons');
 const expandedItem = ref<string | null>(null);
 
 const invTabs = [
-  { id: 'weapons', label: '姝﹀櫒', key: '姝﹀櫒' },
-  { id: 'apparel', label: '鏈嶈', key: '瑁呭' },
-  { id: 'aid', label: '鑽搧', key: '鑽搧' },
-  { id: 'misc', label: '鏉傜墿', key: '閬撳叿' },
+  { id: 'weapons', label: '武器', key: '武器' },
+  { id: 'apparel', label: '装备', key: '装备' },
+  { id: 'aid', label: '药品', key: '药品' },
+  { id: 'misc', label: '道具', key: '道具' },
 ];
 
 const toggleExpand = (id: string) => {
@@ -222,7 +222,7 @@ const toggleExpand = (id: string) => {
   font-size: 12px;
 }
 .exp-effects::before {
-  content: '鏁堟灉: ';
+  content: '效果: ';
   color: var(--gd);
 }
 
