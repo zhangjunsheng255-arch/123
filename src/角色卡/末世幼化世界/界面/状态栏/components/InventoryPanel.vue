@@ -13,33 +13,38 @@
     </div>
     <div class="scrollable">
       <div v-for="tab in invTabs" :key="tab.id" v-show="invTab === tab.id" class="inv-section">
-        <div v-if="!backpackData[tab.key] || Object.keys(backpackData[tab.key]).length === 0" class="empty-inv">
-          <div class="empty-text">空</div>
+        <div v-if="!itemsByTab[tab.id] || itemsByTab[tab.id].length === 0" class="empty-inv">
+          <div class="empty-text">{{ tab.emptyText }}</div>
         </div>
-        <div
-          v-for="(item, name) in backpackData[tab.key]"
-          :key="name"
-          class="expandable"
-          :class="{ selected: expandedItem === 'inv_' + name }"
-          @click="toggleExpand('inv_' + name)"
-        >
-          <div class="exp-header">
-            <span class="exp-name">{{ name }} ({{ item.数量 ?? 1 }})</span>
-            <span class="exp-meta">
-              <span v-if="item.品质">{{ item.品质 }}</span>
-              <span v-if="item.类型">{{ item.类型 }}</span>
-              <span v-if="item.部位">{{ item.部位 }}</span>
-            </span>
-          </div>
-          <div class="exp-details">
-            <div class="exp-details-inner">
-              <div class="exp-details-content">
-                <div class="exp-desc">{{ item.描述 }}</div>
-                <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
+        <template v-else>
+          <div
+            v-for="entry in itemsByTab[tab.id]"
+            :key="entry.name"
+            class="expandable"
+            :class="{ selected: expandedItem === 'inv_' + entry.name }"
+            @click="toggleExpand('inv_' + entry.name)"
+          >
+            <div class="exp-header">
+              <div class="exp-left">
+                <span class="exp-name">{{ entry.name }}</span>
+                <div class="exp-tag-row">
+                  <span v-for="tag in entry.tags" :key="tag.label" class="exp-tag" :class="tag.class">
+                    {{ tag.label }}
+                  </span>
+                </div>
+              </div>
+              <span class="exp-count" :class="{ plural: entry.item.数量 > 1 }"> x{{ entry.item.数量 }} </span>
+            </div>
+            <div class="exp-details">
+              <div class="exp-details-inner">
+                <div class="exp-details-content">
+                  <div class="exp-desc">{{ entry.item.描述 }}</div>
+                  <div v-if="entry.item.效果" class="exp-effects">{{ entry.item.效果 }}</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
   </div>
@@ -59,16 +64,110 @@ const invTab = ref('weapons');
 const expandedItem = ref<string | null>(null);
 
 const invTabs = [
-  { id: 'weapons', label: '武器', key: '武器' },
-  { id: 'apparel', label: '装备', key: '装备' },
-  { id: 'aid', label: '药品', key: '药品' },
-  { id: 'misc', label: '道具', key: '道具' },
+  { id: 'weapons', label: '武器', key: '武器', emptyText: '暂无武器' },
+  { id: 'apparel', label: '装备', key: '装备', emptyText: '暂无装备' },
+  { id: 'aid', label: '药品', key: '药品', emptyText: '暂无药品' },
+  { id: 'misc', label: '道具', key: '道具', emptyText: '暂无道具' },
 ];
 
-const backpackData = computed<Record<string, Record<string, any>>>(() => {
+const QUALITY_CLASS: Record<string, string> = {
+  普通: 'tag-common',
+  稀有: 'tag-rare',
+  史诗: 'tag-epic',
+  传说: 'tag-legend',
+};
+
+const WEAPON_TYPE_CLASS: Record<string, string> = {
+  近战: 'tag-type',
+  远程: 'tag-type',
+  枪械: 'tag-type',
+  投掷: 'tag-type',
+};
+
+const ITEM_TYPE_CLASS: Record<string, string> = {
+  恢复: 'tag-heal',
+  增益: 'tag-buff',
+  特殊: 'tag-special',
+  材料: 'tag-mat',
+  任务: 'tag-quest',
+  消耗: 'tag-consumable',
+  杂项: 'tag-misc',
+};
+
+const SLOT_CLASS: Record<string, string> = {
+  主手: 'tag-slot',
+  副手: 'tag-slot',
+  头部: 'tag-slot',
+  上装: 'tag-slot',
+  下装: 'tag-slot',
+  腿部: 'tag-slot',
+  足部: 'tag-slot',
+  饰品: 'tag-slot',
+};
+
+interface ItemEntry {
+  name: string;
+  item: Record<string, any>;
+  tags: { label: string; class: string }[];
+}
+
+function buildTags(item: Record<string, any>, tabId: string): { label: string; class: string }[] {
+  const tags: { label: string; class: string }[] = [];
+
+  if (item.品质) {
+    tags.push({ label: item.品质, class: QUALITY_CLASS[item.品质] ?? 'tag-common' });
+  }
+
+  if (tabId === 'weapons') {
+    if (item.部位) {
+      tags.push({ label: item.部位, class: SLOT_CLASS[item.部位] ?? 'tag-slot' });
+    }
+    if (item.类型) {
+      tags.push({ label: item.类型, class: WEAPON_TYPE_CLASS[item.类型] ?? 'tag-type' });
+    }
+  } else if (tabId === 'apparel') {
+    if (item.部位) {
+      tags.push({ label: item.部位, class: SLOT_CLASS[item.部位] ?? 'tag-slot' });
+    }
+  } else if (tabId === 'aid' || tabId === 'misc') {
+    if (item.类型) {
+      tags.push({ label: item.类型, class: ITEM_TYPE_CLASS[item.类型] ?? 'tag-misc' });
+    }
+  }
+
+  return tags;
+}
+
+const itemsByTab = computed<Record<string, ItemEntry[]>>(() => {
   const bp = store.data?.背包;
-  if (!bp) return { 武器: {}, 装备: {}, 药品: {}, 道具: {} };
-  return bp as Record<string, Record<string, any>>;
+  const result: Record<string, ItemEntry[]> = {
+    weapons: [],
+    apparel: [],
+    aid: [],
+    misc: [],
+  };
+
+  if (!bp) return result;
+
+  const tabMap: Record<string, string> = {
+    武器: 'weapons',
+    装备: 'apparel',
+    药品: 'aid',
+    道具: 'misc',
+  };
+
+  for (const [tabId, key] of Object.entries(tabMap)) {
+    const category = (bp as Record<string, any>)[tabId];
+    if (category && typeof category === 'object') {
+      result[key] = Object.entries(category).map(([name, item]) => ({
+        name,
+        item: item as Record<string, any>,
+        tags: buildTags(item as Record<string, any>, key),
+      }));
+    }
+  }
+
+  return result;
 });
 
 const toggleExpand = (id: string) => {
@@ -116,7 +215,7 @@ const toggleExpand = (id: string) => {
 }
 .tab::after {
   content: '';
-  position: relative;
+  position: absolute;
   bottom: -14px;
   left: 0;
   right: 0;
@@ -162,13 +261,18 @@ const toggleExpand = (id: string) => {
   background: var(--gd);
 }
 
+.inv-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .expandable {
   background: rgba(26, 90, 26, 0.08);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.25s var(--ease);
   overflow: hidden;
-  margin-bottom: 6px;
   transform: translateZ(0);
 }
 .expandable:hover,
@@ -180,23 +284,131 @@ const toggleExpand = (id: string) => {
 .expandable.selected .exp-header {
   background: rgba(139, 255, 139, 0.15);
 }
+
 .exp-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
+  gap: 10px;
   transition: background 0.2s var(--ease);
 }
+
+.exp-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
 .exp-name {
   color: var(--g);
   font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.exp-meta {
-  color: var(--gd);
-  font-size: 13px;
+
+.exp-tag-row {
   display: flex;
-  gap: 15px;
+  gap: 6px;
+  flex-shrink: 0;
 }
+
+.exp-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  line-height: 1.4;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* 品质标签 */
+.tag-common {
+  color: var(--gd);
+  border-color: var(--gD);
+  background: rgba(26, 90, 26, 0.3);
+}
+.tag-rare {
+  color: #6eb5ff;
+  border-color: #3060a0;
+  background: rgba(48, 96, 160, 0.25);
+}
+.tag-epic {
+  color: #c58bff;
+  border-color: #6030a0;
+  background: rgba(96, 48, 160, 0.25);
+}
+.tag-legend {
+  color: #ffb347;
+  border-color: #a06020;
+  background: rgba(160, 96, 32, 0.25);
+  text-shadow: 0 0 6px rgba(255, 179, 71, 0.5);
+}
+
+/* 类型标签 */
+.tag-type {
+  color: var(--gd);
+  border-color: var(--gD);
+  background: rgba(26, 90, 26, 0.2);
+}
+.tag-heal {
+  color: #8bff8b;
+  border-color: #1a5a1a;
+  background: rgba(26, 90, 26, 0.35);
+}
+.tag-buff {
+  color: #6eb5ff;
+  border-color: #1a3a5a;
+  background: rgba(26, 58, 90, 0.25);
+}
+.tag-special {
+  color: #c58bff;
+  border-color: #3a1a5a;
+  background: rgba(58, 26, 90, 0.25);
+}
+.tag-mat {
+  color: #a0a080;
+  border-color: #4a4a30;
+  background: rgba(74, 74, 48, 0.25);
+}
+.tag-quest {
+  color: #ffb347;
+  border-color: #5a3a1a;
+  background: rgba(90, 58, 26, 0.25);
+}
+.tag-consumable {
+  color: #8bd4ff;
+  border-color: #2a4a5a;
+  background: rgba(42, 74, 90, 0.25);
+}
+.tag-misc {
+  color: var(--gd);
+  border-color: var(--gD);
+  background: rgba(26, 90, 26, 0.15);
+}
+
+/* 部位标签 */
+.tag-slot {
+  color: #a0a080;
+  border-color: #3a3a20;
+  background: rgba(58, 58, 32, 0.2);
+}
+
+.exp-count {
+  color: var(--gd);
+  font-size: 16px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.exp-count.plural {
+  color: var(--g);
+  text-shadow: 0 0 8px rgba(139, 255, 139, 0.4);
+}
+
 .exp-details {
   display: grid;
   grid-template-rows: 0fr;
@@ -237,19 +449,6 @@ const toggleExpand = (id: string) => {
   color: var(--gd);
 }
 
-.inv-cat {
-  color: var(--gd);
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin: 12px 0 8px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--gD);
-}
-.inv-cat:first-child {
-  margin-top: 0;
-}
-
 .empty-inv {
   display: flex;
   flex-direction: column;
@@ -257,7 +456,7 @@ const toggleExpand = (id: string) => {
   justify-content: center;
   padding: 40px 0;
 }
-.empty-inv .empty-text {
+.empty-text {
   color: var(--gd);
   font-size: 16px;
   opacity: 0.6;
