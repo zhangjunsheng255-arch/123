@@ -183,17 +183,16 @@ const toggleExpand = (id: string) => {
 
 <style scoped>
 .page {
-  position: relative;
-  inset: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
   transition:
     opacity 0.3s var(--ease),
     visibility 0.3s;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
 }
 .page.active {
   opacity: 1;
@@ -204,27 +203,25 @@ const toggleExpand = (id: string) => {
 
 .tabs {
   display: flex;
-  gap: 6px;
-  padding-bottom: 8px;
+  gap: 5px;
+  padding-bottom: 12px;
   border-bottom: 2px solid var(--gD);
-  margin-bottom: 10px;
-  flex-shrink: 0;
+  margin-bottom: 15px;
 }
 .tab {
-  color: var(--gd);
-  font-size: 10px;
-  padding: 4px 10px;
+  color: var(--gD);
+  font-size: 14px;
+  padding: 6px 16px;
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-weight: bold;
 }
 .tab::after {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -14px;
   left: 0;
   right: 0;
   height: 2px;
@@ -281,6 +278,7 @@ const toggleExpand = (id: string) => {
   cursor: pointer;
   transition: all 0.25s var(--ease);
   overflow: hidden;
+  margin-bottom: 6px;
   transform: translateZ(0);
 }
 .expandable:hover,
