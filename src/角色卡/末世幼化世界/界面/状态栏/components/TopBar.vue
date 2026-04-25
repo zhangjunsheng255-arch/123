@@ -193,7 +193,7 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
       "hp ap"
       "caps time"
       "loc loc";
-    gap: 6px 10px;
+    gap: 8px 18px;
     padding: 10px 12px;
   }
 
@@ -218,7 +218,9 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
 
   .time-group {
     grid-area: time;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
   }
 
   .location-row {
@@ -226,15 +228,11 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   }
 
   .stat-row {
-    justify-content: space-between;
+    gap: 4px;
   }
 
   .time-val {
     font-size: 16px;
-  }
-
-  .time-group .time-val {
-    text-align: left;
   }
 }
 
