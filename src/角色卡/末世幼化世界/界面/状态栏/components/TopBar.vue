@@ -1,17 +1,5 @@
 <template>
   <div class="top-bar">
-    <!-- 左侧：HP/AP（数值） -->
-    <div class="left-section">
-      <div class="stat-row">
-        <label>HP</label>
-        <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
-      </div>
-      <div class="stat-row">
-        <label>AP</label>
-        <span class="val">{{ apCurrent }}/{{ apMax }}</span>
-      </div>
-    </div>
-
     <!-- 中间：等级/晶核/位置 -->
     <div class="center-section">
       <div class="info-row">
@@ -44,14 +32,6 @@ import { useStatusStore } from '../store';
 
 const store = useStatusStore();
 
-// HP - 主角.HP.当前/上限
-const hpCurrent = computed(() => store.data?.主角?.HP?.当前 ?? 100);
-const hpMax = computed(() => store.data?.主角?.HP?.上限 ?? 100);
-
-// AP - 主角.AP.当前/上限
-const apCurrent = computed(() => store.data?.主角?.AP?.当前 ?? 50);
-const apMax = computed(() => store.data?.主角?.AP?.上限 ?? 50);
-
 // 等级 - 主角.当前等级
 const level = computed(() => store.data?.主角?.当前等级 ?? 1);
 
@@ -81,28 +61,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   border-bottom: 2px solid var(--gD);
   gap: 20px;
   flex-shrink: 0;
-}
-
-.left-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  width: 200px;
-  flex-shrink: 0;
-}
-
-.stat-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.stat-row label {
-  color: var(--gd);
-  font-size: 14px;
-  text-transform: uppercase;
-  min-width: 30px;
-  font-weight: bold;
 }
 
 .val {
@@ -191,16 +149,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
     flex-wrap: wrap;
   }
 
-  .left-section {
-    width: 100%;
-    flex-direction: row;
-    gap: 15px;
-  }
-
-  .stat-row {
-    flex: 1;
-  }
-
   .center-section {
     flex-direction: row;
     align-items: center;
@@ -230,15 +178,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   .top-bar {
     padding: 8px 10px;
     gap: 10px;
-  }
-
-  .left-section {
-    gap: 8px;
-  }
-
-  .stat-row label {
-    font-size: 12px;
-    min-width: 25px;
   }
 
   .val {
