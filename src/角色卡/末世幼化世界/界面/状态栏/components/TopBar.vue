@@ -5,24 +5,12 @@
       <!-- HP -->
       <div class="stat-row">
         <label>HP</label>
-        <div class="bar-wrap">
-          <div class="bar" :style="{ width: hpPercent + '%' }"></div>
-          <div class="segs">
-            <div class="seg" v-for="i in 10" :key="i"></div>
-          </div>
-        </div>
         <span class="val">{{ hpCurrent }}/{{ hpMax }}</span>
       </div>
 
       <!-- AP -->
       <div class="stat-row">
         <label>AP</label>
-        <div class="bar-wrap">
-          <div class="bar" :style="{ width: apPercent + '%' }"></div>
-          <div class="segs">
-            <div class="seg" v-for="i in 10" :key="i"></div>
-          </div>
-        </div>
         <span class="val">{{ apCurrent }}/{{ apMax }}</span>
       </div>
     </div>
@@ -54,39 +42,37 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useStatusStore } from '../store'
+import { computed } from 'vue';
+import { useStatusStore } from '../store';
 
-const store = useStatusStore()
+const store = useStatusStore();
 
 // HP - 主角.HP.当前/上限
-const hpCurrent = computed(() => store.data?.主角?.HP?.当前 ?? 100)
-const hpMax = computed(() => store.data?.主角?.HP?.上限 ?? 100)
-const hpPercent = computed(() => Math.min(100, Math.max(0, (hpCurrent.value / hpMax.value) * 100)))
+const hpCurrent = computed(() => store.data?.主角?.HP?.当前 ?? 100);
+const hpMax = computed(() => store.data?.主角?.HP?.上限 ?? 100);
 
 // AP - 主角.AP.当前/上限
-const apCurrent = computed(() => store.data?.主角?.AP?.当前 ?? 50)
-const apMax = computed(() => store.data?.主角?.AP?.上限 ?? 50)
-const apPercent = computed(() => Math.min(100, Math.max(0, (apCurrent.value / apMax.value) * 100)))
+const apCurrent = computed(() => store.data?.主角?.AP?.当前 ?? 50);
+const apMax = computed(() => store.data?.主角?.AP?.上限 ?? 50);
 
 // 等级 - 主角.当前等级
-const level = computed(() => store.data?.主角?.当前等级 ?? 1)
+const level = computed(() => store.data?.主角?.当前等级 ?? 1);
 
 // 晶核 - 主角.晶核数量
-const caps = computed(() => store.data?.主角?.晶核数量 ?? 0)
+const caps = computed(() => store.data?.主角?.晶核数量 ?? 0);
 
 // 显示的时间 - 世界.时间.时刻
-const displayTime = computed(() => store.data?.世界?.时间?.时刻 ?? '08:00')
+const displayTime = computed(() => store.data?.世界?.时间?.时刻 ?? '08:00');
 
 // 显示的地点 - 世界.当前位置.区域/具体地点
 const displayLocation = computed(() => {
-  const region = store.data?.世界?.当前位置?.区域 ?? '荒野'
-  const location = store.data?.世界?.当前位置?.具体地点 ?? '未知地点'
-  return `${region}·${location}`
-})
+  const region = store.data?.世界?.当前位置?.区域 ?? '荒野';
+  const location = store.data?.世界?.当前位置?.具体地点 ?? '未知地点';
+  return `${region}·${location}`;
+});
 
 // 显示的时刻/阶段 - 世界.时间.阶段
-const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上午')
+const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上午');
 </script>
 
 <style scoped>
@@ -120,45 +106,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   text-transform: uppercase;
   min-width: 30px;
   font-weight: bold;
-}
-
-.bar-wrap {
-  flex: 1;
-  height: 12px;
-  background: #0a2a0a;
-  border: 1px solid var(--gD);
-  position: relative;
-  overflow: hidden;
-}
-
-.bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--g) 0%, var(--gd) 100%);
-  box-shadow: 0 0 8px rgba(139, 255, 139, 0.5);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.bar::after {
-  content: '';
-  position: absolute;
-  inset: 0 0 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
-}
-
-.segs {
-  position: absolute;
-  inset: 0;
-  display: flex;
-}
-
-.seg {
-  flex: 1;
-  border-right: 1px solid rgba(0, 0, 0, 0.5);
-}
-
-.seg:last-child {
-  border-right: none;
 }
 
 .val {
