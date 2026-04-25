@@ -15,13 +15,9 @@
       </div>
     </div>
 
-    <!-- 中间：等级/晶核/位置 -->
+    <!-- 中间：晶核/位置 -->
     <div class="center-section">
       <div class="info-row">
-        <span class="info-item">
-          <label>LEVEL</label>
-          <span class="val">{{ level }}</span>
-        </span>
         <span class="info-item">
           <label>晶核</label>
           <span class="val">{{ caps }}</span>
@@ -35,8 +31,10 @@
 
     <!-- 右侧：时间 -->
     <div class="right-section">
-      <span class="time-val">{{ displayTime }}</span>
-      <span class="period-val">{{ displayPeriod }}</span>
+      <div class="time-group">
+        <span class="time-val">{{ displayTime }}</span>
+        <span class="period-val">{{ displayPeriod }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -54,9 +52,6 @@ const hpMax = computed(() => store.data?.主角?.HP?.上限 ?? 100);
 // AP - 主角.AP.当前/上限
 const apCurrent = computed(() => store.data?.主角?.AP?.当前 ?? 50);
 const apMax = computed(() => store.data?.主角?.AP?.上限 ?? 50);
-
-// 等级 - 主角.当前等级
-const level = computed(() => store.data?.主角?.当前等级 ?? 1);
 
 // 晶核 - 主角.晶核数量
 const caps = computed(() => store.data?.主角?.晶核数量 ?? 0);
@@ -166,11 +161,14 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
 }
 
 .right-section {
+  flex-shrink: 0;
+}
+
+.time-group {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 4px;
-  flex-shrink: 0;
 }
 
 .time-val {
@@ -189,51 +187,54 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
 /* 移动端适配 */
 @media (max-width: 768px) {
   .top-bar {
-    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "hp ap"
+      "caps time"
+      "loc loc";
     gap: 6px 10px;
-    flex-wrap: wrap;
+    padding: 10px 12px;
   }
 
-  .left-section {
-    width: auto;
-    flex: 1 1 0;
-    flex-direction: row;
-    gap: 12px;
-    order: 0;
+  .left-section,
+  .center-section,
+  .info-row,
+  .right-section {
+    display: contents;
   }
 
-  .stat-row {
-    flex: 1;
+  .stat-row:first-child {
+    grid-area: hp;
   }
 
-  .center-section {
-    flex: 1 1 100%;
-    min-width: 0;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-    order: 2;
+  .stat-row:last-child {
+    grid-area: ap;
   }
 
-  .info-row {
-    gap: 12px;
-    flex-shrink: 0;
+  .info-item {
+    grid-area: caps;
+  }
+
+  .time-group {
+    grid-area: time;
+    align-items: flex-start;
   }
 
   .location-row {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
+    grid-area: loc;
   }
 
-  .right-section {
-    width: auto;
-    flex-shrink: 0;
-    order: 1;
+  .stat-row {
+    justify-content: space-between;
   }
 
   .time-val {
     font-size: 16px;
+  }
+
+  .time-group .time-val {
+    text-align: left;
   }
 }
 
@@ -241,10 +242,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   .top-bar {
     padding: 8px 10px;
     gap: 4px 8px;
-  }
-
-  .left-section {
-    gap: 8px;
   }
 
   .stat-row label {
@@ -255,14 +252,6 @@ const displayPeriod = computed(() => store.data?.世界?.时间?.阶段 ?? '上�
   .val {
     font-size: 12px;
     min-width: 0;
-  }
-
-  .center-section {
-    gap: 8px;
-  }
-
-  .info-row {
-    gap: 8px;
   }
 
   .info-item label,
