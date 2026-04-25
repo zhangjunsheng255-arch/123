@@ -10,7 +10,7 @@
           </div>
           <div class="content">
             <div v-if="activeMenu === 'status'" class="panel">
-              <StatusPanel />
+              <StatusPanel :active="true" />
             </div>
             <div v-else-if="activeMenu === 'inv'" class="panel">
               <InventoryPanel :active="true" />

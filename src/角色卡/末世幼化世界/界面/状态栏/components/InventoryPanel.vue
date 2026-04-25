@@ -295,7 +295,7 @@ const toggleExpand = (id: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 14px;
+  padding: 10px 14px;
   gap: 10px;
   transition: background 0.2s var(--ease);
 }
