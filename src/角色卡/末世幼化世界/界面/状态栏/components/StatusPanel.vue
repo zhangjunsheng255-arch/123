@@ -406,6 +406,33 @@ const togglePerk = (name: string) => {
 }
 
 @media (max-width: 768px) {
+  .tabs {
+    gap: 4px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  .tab {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+  .tab::after {
+    bottom: -12px;
+  }
+  .exp-header {
+    padding: 8px 12px;
+  }
+  .exp-name {
+    font-size: 13px;
+  }
+  .exp-details-content {
+    padding: 0 10px;
+  }
+  .expandable.selected .exp-details-content {
+    padding: 10px 10px;
+  }
+  .exp-desc {
+    font-size: 12px;
+  }
   .spec-letter {
     font-size: 20px;
     width: 28px;
@@ -425,6 +452,33 @@ const togglePerk = (name: string) => {
 }
 
 @media (max-width: 480px) {
+  .tabs {
+    gap: 3px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+  .tab {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  .tab::after {
+    bottom: -10px;
+  }
+  .exp-header {
+    padding: 7px 10px;
+  }
+  .exp-name {
+    font-size: 12px;
+  }
+  .exp-details-content {
+    padding: 0 8px;
+  }
+  .expandable.selected .exp-details-content {
+    padding: 8px 8px;
+  }
+  .exp-desc {
+    font-size: 11px;
+  }
   .spec-item {
     padding: 8px 10px;
   }

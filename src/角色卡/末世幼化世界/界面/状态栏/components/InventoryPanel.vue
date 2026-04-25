@@ -470,22 +470,22 @@ const toggleExpand = (id: string) => {
 
 @media (max-width: 768px) {
   .tabs {
-    gap: 5px;
-    padding-bottom: 7px;
-    margin-bottom: 9px;
+    gap: 4px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .tab {
-    font-size: 9px;
-    padding: 3px 8px;
+    font-size: 11px;
+    padding: 5px 10px;
   }
 
   .tab::after {
-    bottom: -9px;
+    bottom: -12px;
   }
 
   .exp-header {
-    padding: 11px 12px;
+    padding: 8px 12px;
     gap: 6px;
   }
 
@@ -518,6 +518,10 @@ const toggleExpand = (id: string) => {
     padding: 10px 10px;
   }
 
+  .exp-desc {
+    font-size: 12px;
+  }
+
   .empty-text {
     font-size: 14px;
   }
@@ -526,21 +530,21 @@ const toggleExpand = (id: string) => {
 @media (max-width: 480px) {
   .tabs {
     gap: 3px;
-    padding-bottom: 6px;
-    margin-bottom: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   .tab {
-    font-size: 8px;
-    padding: 3px 6px;
+    font-size: 10px;
+    padding: 4px 7px;
   }
 
   .tab::after {
-    bottom: -8px;
+    bottom: -10px;
   }
 
   .exp-header {
-    padding: 9px 10px;
+    padding: 7px 10px;
     gap: 4px;
   }
 
