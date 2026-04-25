@@ -476,8 +476,8 @@ const toggleExpand = (id: string) => {
   }
 
   .tab {
-    font-size: 11px;
-    padding: 5px 10px;
+    font-size: 12px;
+    padding: 5px 12px;
   }
 
   .tab::after {
@@ -535,8 +535,8 @@ const toggleExpand = (id: string) => {
   }
 
   .tab {
-    font-size: 10px;
-    padding: 4px 7px;
+    font-size: 11px;
+    padding: 4px 8px;
   }
 
   .tab::after {
