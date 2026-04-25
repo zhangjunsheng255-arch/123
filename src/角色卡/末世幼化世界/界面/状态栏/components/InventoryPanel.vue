@@ -204,16 +204,16 @@ const toggleExpand = (id: string) => {
 
 .tabs {
   display: flex;
-  gap: 8px;
-  padding-bottom: 12px;
+  gap: 6px;
+  padding-bottom: 8px;
   border-bottom: 2px solid var(--gD);
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   flex-shrink: 0;
 }
 .tab {
   color: var(--gd);
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 10px;
+  padding: 4px 10px;
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
@@ -224,7 +224,7 @@ const toggleExpand = (id: string) => {
 .tab::after {
   content: '';
   position: absolute;
-  bottom: -14px;
+  bottom: -10px;
   left: 0;
   right: 0;
   height: 2px;
@@ -297,7 +297,7 @@ const toggleExpand = (id: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 14px 14px;
   gap: 10px;
   transition: background 0.2s var(--ease);
 }
@@ -325,8 +325,8 @@ const toggleExpand = (id: string) => {
 }
 
 .exp-tag {
-  font-size: 10px;
-  padding: 2px 8px;
+  font-size: 12px;
+  padding: 3px 8px;
   line-height: 1.4;
   border: 1px solid;
   text-transform: uppercase;
@@ -472,18 +472,22 @@ const toggleExpand = (id: string) => {
 
 @media (max-width: 768px) {
   .tabs {
-    gap: 6px;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    gap: 5px;
+    padding-bottom: 7px;
+    margin-bottom: 9px;
   }
 
   .tab {
-    font-size: 11px;
-    padding: 5px 10px;
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+
+  .tab::after {
+    bottom: -9px;
   }
 
   .exp-header {
-    padding: 8px 10px;
+    padding: 11px 12px;
     gap: 6px;
   }
 
@@ -496,8 +500,8 @@ const toggleExpand = (id: string) => {
   }
 
   .exp-tag {
-    font-size: 9px;
-    padding: 1px 5px;
+    font-size: 10px;
+    padding: 2px 6px;
   }
 
   .exp-tag-row {
@@ -523,22 +527,22 @@ const toggleExpand = (id: string) => {
 
 @media (max-width: 480px) {
   .tabs {
-    gap: 4px;
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    gap: 3px;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
   }
 
   .tab {
-    font-size: 10px;
-    padding: 4px 8px;
+    font-size: 8px;
+    padding: 3px 6px;
   }
 
   .tab::after {
-    bottom: -10px;
+    bottom: -8px;
   }
 
   .exp-header {
-    padding: 6px 8px;
+    padding: 9px 10px;
     gap: 4px;
   }
 
@@ -554,8 +558,8 @@ const toggleExpand = (id: string) => {
   }
 
   .exp-tag {
-    font-size: 8px;
-    padding: 1px 4px;
+    font-size: 9px;
+    padding: 2px 5px;
     letter-spacing: 0;
   }
 
