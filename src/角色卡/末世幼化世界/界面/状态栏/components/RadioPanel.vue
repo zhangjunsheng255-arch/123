@@ -1,10 +1,13 @@
-﻿<template>
+<template>
   <div id="p-radio" class="page" :class="{ active: active }">
     <div class="scrollable">
       <template v-for="cat in radioCategories" :key="cat.id">
         <div class="inv-cat">{{ cat.label }}</div>
+        <div v-if="!radioData[cat.key] || Object.keys(radioData[cat.key]).length === 0" class="empty-inv">
+          <div class="empty-text">无信号</div>
+        </div>
         <div
-          v-for="(content, name) in stat_data?.骞挎挱绯荤粺?.[cat.key as keyof typeof stat_data.骞挎挱绯荤粺] || {}"
+          v-for="(content, name) in radioData[cat.key]"
           :key="name"
           class="expandable"
           :class="{ selected: expandedItem === 'radio_' + cat.id + '_' + name }"
@@ -37,19 +40,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useStatusStore } from '../store';
 
 defineProps<{
   active: boolean;
-  stat_data: any;
+  stat_data?: any;
 }>();
+
+const store = useStatusStore();
 
 const expandedItem = ref<string | null>(null);
 
 const radioCategories = [
-  { id: 'faction', label: '鍔垮姏骞挎挱', key: '鍔垮姏骞挎挱' },
-  { id: 'personal', label: '涓汉骞挎挱', key: '涓汉骞挎挱' },
+  { id: 'faction', label: '势力广播', key: '势力广播' },
+  { id: 'personal', label: '个人广播', key: '个人广播' },
 ];
+
+const radioData = computed<Record<string, Record<string, string>>>(() => {
+  const bs = store.data?.广播系统;
+  if (!bs) return { 势力广播: {}, 个人广播: {} };
+  return bs as Record<string, Record<string, string>>;
+});
 
 const toggleExpand = (id: string) => {
   expandedItem.value = expandedItem.value === id ? null : id;
@@ -174,6 +186,19 @@ const toggleExpand = (id: string) => {
 }
 .inv-cat:first-child {
   margin-top: 0;
+}
+
+.empty-inv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+.empty-inv .empty-text {
+  color: var(--gd);
+  font-size: 16px;
+  opacity: 0.6;
 }
 
 .sound {

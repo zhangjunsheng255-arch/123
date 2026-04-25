@@ -13,7 +13,7 @@
               <StatusPanel />
             </div>
             <div v-else-if="activeMenu === 'inv'" class="panel">
-              <InventoryPanel :active="true" :stat-data="statData" />
+              <InventoryPanel :active="true" />
             </div>
             <div v-else-if="activeMenu === 'data'" class="panel">
               <DataPanel :active="true" :stat-data="statData" @request-data-page="activeMenu = 'data'" />

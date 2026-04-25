@@ -13,26 +13,29 @@
     </div>
     <div class="scrollable">
       <div v-for="tab in invTabs" :key="tab.id" v-show="invTab === tab.id" class="inv-section">
+        <div v-if="!backpackData[tab.key] || Object.keys(backpackData[tab.key]).length === 0" class="empty-inv">
+          <div class="empty-text">空</div>
+        </div>
         <div
-          v-for="(item, name) in stat_data?.背包?.[tab.key as keyof typeof stat_data.背包] || {}"
+          v-for="(item, name) in backpackData[tab.key]"
           :key="name"
           class="expandable"
           :class="{ selected: expandedItem === 'inv_' + name }"
           @click="toggleExpand('inv_' + name)"
         >
           <div class="exp-header">
-            <span class="exp-name">{{ name }} ({{ (item as any).数量 || 1 }})</span>
+            <span class="exp-name">{{ name }} ({{ item.数量 ?? 1 }})</span>
             <span class="exp-meta">
-              <span v-if="(item as any).品质">{{ (item as any).品质 }}</span>
-              <span v-if="(item as any).类型">{{ (item as any).类型 }}</span>
-              <span v-if="(item as any).部位">{{ (item as any).部位 }}</span>
+              <span v-if="item.品质">{{ item.品质 }}</span>
+              <span v-if="item.类型">{{ item.类型 }}</span>
+              <span v-if="item.部位">{{ item.部位 }}</span>
             </span>
           </div>
           <div class="exp-details">
             <div class="exp-details-inner">
               <div class="exp-details-content">
-                <div class="exp-desc">{{ (item as any).描述 }}</div>
-                <div v-if="(item as any).效果" class="exp-effects">{{ (item as any).效果 }}</div>
+                <div class="exp-desc">{{ item.描述 }}</div>
+                <div v-if="item.效果" class="exp-effects">{{ item.效果 }}</div>
               </div>
             </div>
           </div>
@@ -43,12 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useStatusStore } from '../store';
 
 defineProps<{
   active: boolean;
-  stat_data: any;
 }>();
+
+const store = useStatusStore();
 
 const invTab = ref('weapons');
 const expandedItem = ref<string | null>(null);
@@ -59,6 +64,12 @@ const invTabs = [
   { id: 'aid', label: '药品', key: '药品' },
   { id: 'misc', label: '道具', key: '道具' },
 ];
+
+const backpackData = computed<Record<string, Record<string, any>>>(() => {
+  const bp = store.data?.背包;
+  if (!bp) return { 武器: {}, 装备: {}, 药品: {}, 道具: {} };
+  return bp as Record<string, Record<string, any>>;
+});
 
 const toggleExpand = (id: string) => {
   expandedItem.value = expandedItem.value === id ? null : id;
@@ -237,5 +248,18 @@ const toggleExpand = (id: string) => {
 }
 .inv-cat:first-child {
   margin-top: 0;
+}
+
+.empty-inv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+.empty-inv .empty-text {
+  color: var(--gd);
+  font-size: 16px;
+  opacity: 0.6;
 }
 </style>
