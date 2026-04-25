@@ -6,46 +6,48 @@
         :key="tab.id"
         class="tab"
         :class="{ active: invTab === tab.id }"
-        @click="invTab = tab.id"
+        @click="switchTab(tab.id)"
       >
         {{ tab.label }}
       </div>
     </div>
     <div class="scrollable">
-      <div v-for="tab in invTabs" :key="tab.id" v-show="invTab === tab.id" class="inv-section">
-        <div v-if="!itemsByTab[tab.id] || itemsByTab[tab.id].length === 0" class="empty-inv">
-          <div class="empty-text">{{ tab.emptyText }}</div>
-        </div>
-        <template v-else>
-          <div
-            v-for="entry in itemsByTab[tab.id]"
-            :key="entry.name"
-            class="expandable"
-            :class="{ selected: expandedItem === 'inv_' + entry.name }"
-            @click="toggleExpand('inv_' + entry.name)"
-          >
-            <div class="exp-header">
-              <div class="exp-left">
-                <span class="exp-name">{{ entry.name }}</span>
-                <div class="exp-tag-row">
-                  <span v-for="tag in entry.tags" :key="tag.label" class="exp-tag" :class="tag.class">
-                    {{ tag.label }}
-                  </span>
-                </div>
-              </div>
-              <span class="exp-count" :class="{ plural: entry.item.数量 > 1 }"> x{{ entry.item.数量 }} </span>
-            </div>
-            <div class="exp-details">
-              <div class="exp-details-inner">
-                <div class="exp-details-content">
-                  <div class="exp-desc">{{ entry.item.描述 }}</div>
-                  <div v-if="entry.item.效果" class="exp-effects">{{ entry.item.效果 }}</div>
-                </div>
-              </div>
-            </div>
+      <template v-for="tab in invTabs" :key="tab.id">
+        <div v-if="invTab === tab.id" class="inv-section">
+          <div v-if="!itemsByTab[tab.id] || itemsByTab[tab.id].length === 0" class="empty-inv">
+            <div class="empty-text">{{ tab.emptyText }}</div>
           </div>
-        </template>
-      </div>
+          <template v-else>
+            <div
+              v-for="entry in itemsByTab[tab.id]"
+              :key="entry.name"
+              class="expandable"
+              :class="{ selected: expandedItem === 'inv_' + entry.name }"
+              @click="toggleExpand('inv_' + entry.name)"
+            >
+              <div class="exp-header">
+                <div class="exp-left">
+                  <span class="exp-name">{{ entry.name }}</span>
+                  <div class="exp-tag-row">
+                    <span v-for="tag in entry.tags" :key="tag.label" class="exp-tag" :class="tag.class">
+                      {{ tag.label }}
+                    </span>
+                  </div>
+                </div>
+                <span class="exp-count" :class="{ plural: entry.item.数量 > 1 }"> x{{ entry.item.数量 }} </span>
+              </div>
+              <div class="exp-details">
+                <div class="exp-details-inner">
+                  <div class="exp-details-content">
+                    <div class="exp-desc">{{ entry.item.描述 }}</div>
+                    <div v-if="entry.item.效果" class="exp-effects">{{ entry.item.效果 }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
   </div>
 </template>
@@ -170,6 +172,10 @@ const itemsByTab = computed<Record<string, ItemEntry[]>>(() => {
   return result;
 });
 
+const switchTab = (id: string) => {
+  invTab.value = id;
+};
+
 const toggleExpand = (id: string) => {
   expandedItem.value = expandedItem.value === id ? null : id;
 };
@@ -198,20 +204,22 @@ const toggleExpand = (id: string) => {
 
 .tabs {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   padding-bottom: 12px;
   border-bottom: 2px solid var(--gD);
   margin-bottom: 15px;
+  flex-shrink: 0;
 }
 .tab {
-  color: var(--gD);
-  font-size: 14px;
-  padding: 6px 16px;
+  color: var(--gd);
+  font-size: 16px;
+  padding: 8px 16px;
   cursor: pointer;
   transition: all 0.2s var(--ease);
   position: relative;
   text-transform: uppercase;
   letter-spacing: 1px;
+  font-weight: bold;
 }
 .tab::after {
   content: '';
@@ -460,5 +468,126 @@ const toggleExpand = (id: string) => {
   color: var(--gd);
   font-size: 16px;
   opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .tabs {
+    gap: 6px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+
+  .tab {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .exp-header {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .exp-left {
+    gap: 6px;
+  }
+
+  .exp-name {
+    font-size: 13px;
+  }
+
+  .exp-tag {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+
+  .exp-tag-row {
+    gap: 4px;
+  }
+
+  .exp-count {
+    font-size: 14px;
+  }
+
+  .exp-details-content {
+    padding: 0 10px;
+  }
+
+  .expandable.selected .exp-details-content {
+    padding: 10px 10px;
+  }
+
+  .empty-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs {
+    gap: 4px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+  }
+
+  .tab {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  .tab::after {
+    bottom: -10px;
+  }
+
+  .exp-header {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .exp-left {
+    gap: 4px;
+  }
+
+  .exp-name {
+    font-size: 12px;
+    max-width: none;
+    min-width: 0;
+    flex-shrink: 1;
+  }
+
+  .exp-tag {
+    font-size: 8px;
+    padding: 1px 4px;
+    letter-spacing: 0;
+  }
+
+  .exp-tag-row {
+    gap: 3px;
+    flex-shrink: 0;
+  }
+
+  .exp-count {
+    font-size: 12px;
+    min-width: 0;
+    flex-shrink: 0;
+  }
+
+  .exp-details-content {
+    padding: 0 8px;
+  }
+
+  .expandable.selected .exp-details-content {
+    padding: 8px 8px;
+  }
+
+  .exp-desc {
+    font-size: 11px;
+  }
+
+  .empty-text {
+    font-size: 13px;
+  }
+
+  .empty-inv {
+    padding: 30px 0;
+  }
 }
 </style>
