@@ -52,7 +52,7 @@ const menus = [
 
 <style scoped>
 .menu {
-  width: 120px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 5px;
