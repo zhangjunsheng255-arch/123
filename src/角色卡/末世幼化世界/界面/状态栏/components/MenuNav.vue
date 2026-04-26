@@ -24,7 +24,8 @@ defineEmits<{
 const menus = [
   { id: 'status', label: '状态' },
   { id: 'inv', label: '背包' },
-  { id: 'data', label: '数据' },
+  { id: 'base', label: '基地' },
+  { id: 'quests', label: '任务' },
   { id: 'map', label: '地图' },
   { id: 'radio', label: '广播' },
 ];

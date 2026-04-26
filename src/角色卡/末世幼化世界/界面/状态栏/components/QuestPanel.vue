@@ -1,86 +1,90 @@
 <template>
-  <div id="p-data" class="page" :class="{ active: active }">
+  <div id="p-quest" class="page" :class="{ active: active }">
     <div class="tabs">
       <div
-        v-for="tab in dataTabs"
+        v-for="tab in mainTabs"
         :key="tab.id"
         class="tab"
-        :class="{ active: dataTab === tab.id }"
-        @click="dataTab = tab.id"
+        :class="{ active: mainTab === tab.id }"
+        @click="mainTab = tab.id"
       >
         {{ tab.label }}
       </div>
     </div>
     <div class="scrollable">
-      <div v-show="dataTab === 'quests'" class="data-content">
-        <div v-if="stat_data?.基地" class="data-grid">
-          <div class="data-card">
-            <div class="data-title">基地等级</div>
-            <div class="data-val">{{ stat_data.基地.基地等级 || 0 }}</div>
-          </div>
-          <div class="data-card">
-            <div class="data-title">控制总数</div>
-            <div class="data-val">
-              {{ stat_data.基地.控制统计?.当前控制幼女总数 || 0 }}/{{ stat_data.基地.控制统计?.可控制上限 || 3 }}
-            </div>
-          </div>
-          <div class="data-card">
-            <div class="data-title">战斗型幼女</div>
-            <div class="data-val">{{ stat_data.基地.幼女分类与数量?.战斗型幼女 || 0 }}</div>
-          </div>
-          <div class="data-card">
-            <div class="data-title">游戏时间</div>
-            <div class="data-val">{{ stat_data?.世界?.时间?.阶段 || '未知' }}</div>
+      <!-- 任务标签页 -->
+      <div v-show="mainTab === 'quests'" class="quest-content">
+        <div class="filter-row">
+          <div
+            v-for="f in questFilters"
+            :key="f.id"
+            class="filter-btn"
+            :class="{ active: questFilter === f.id }"
+            @click="questFilter = f.id"
+          >
+            {{ f.label }}
           </div>
         </div>
-        <div class="inv-cat">进行中的任务</div>
-        <template v-if="stat_data?.基地?.任务系统">
+        <template v-if="filteredQuests && Object.keys(filteredQuests).length > 0">
           <div
-            v-for="(quest, name) in stat_data.基地.任务系统"
-            :key="name"
+            v-for="(quest, name) in filteredQuests"
+            :key="name as string"
             class="expandable"
-            :class="{ selected: expandedItem === 'quest_' + name }"
-            @click="toggleExpand('quest_' + name)"
+            :class="{ selected: expandedItem === 'quest_' + (name as string) }"
+            @click="toggleExpand('quest_' + (name as string))"
           >
             <div class="exp-header">
-              <span class="exp-name">{{ name }}</span>
-              <span class="exp-meta">{{ (quest as any).状态 }} ({{ (quest as any).进度 || 0 }}%)</span>
+              <span class="exp-name">{{ name as string }}</span>
+              <div class="exp-meta">
+                <span class="quest-type-tag" :class="'type-' + ((quest as any).类型 ?? '日常')">{{ (quest as any).类型 ?? '日常' }}</span>
+                <span>{{ (quest as any).状态 }}</span>
+                <span>{{ (quest as any).进度 ?? 0 }}%</span>
+              </div>
             </div>
             <div class="exp-details">
               <div class="exp-details-inner">
                 <div class="exp-details-content">
                   <div class="exp-desc">{{ (quest as any).描述 }}</div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" :style="{ width: ((quest as any).进度 ?? 0) + '%' }"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </template>
+        <div v-else class="empty-hint">暂无{{ questFilters.find(f => f.id === questFilter)?.label ?? '任务' }}</div>
       </div>
-      <div v-show="dataTab === 'stats'" class="data-content">
+
+      <!-- 关系速览标签页 -->
+      <div v-show="mainTab === 'relations'" class="quest-content">
+        <div class="inv-cat">NPC 关系</div>
         <div v-if="stat_data?.NPC列表" class="data-grid">
-          <div v-for="(val, name) in stat_data.NPC列表" :key="name" class="data-card">
-            <div class="data-title">{{ name }}</div>
-            <div class="data-val">{{ (val as any).好感度 || 0 }}</div>
-            <div class="data-title" style="margin-top: 5px">{{ (val as any).关系 || '未知' }}</div>
+          <div v-for="(val, name) in stat_data.NPC列表" :key="name as string" class="data-card">
+            <div class="data-title">{{ name as string }}</div>
+            <div class="data-val">{{ (val as any).好感度 ?? 0 }}</div>
+            <div class="data-sub">{{ (val as any).关系 ?? '未知' }}</div>
           </div>
         </div>
-      </div>
-      <div v-show="dataTab === 'notes'" class="data-content">
+        <div v-else class="empty-hint">暂无 NPC 记录</div>
+
+        <div v-if="stat_data?.重要人物列表" class="inv-cat" style="margin-top: 16px">重要人物</div>
         <template v-if="stat_data?.重要人物列表">
-          <div v-for="(person, name) in stat_data.重要人物列表" :key="name" class="expandable">
+          <div v-for="(person, name) in stat_data.重要人物列表" :key="name as string" class="expandable">
             <div class="exp-header">
-              <span class="exp-name">{{ name }}</span>
-              <span class="exp-meta">{{ (person as any).关系 || '中立' }} ({{ (person as any).好感度 || 0 }})</span>
+              <span class="exp-name">{{ name as string }}</span>
+              <span class="exp-meta">{{ (person as any).关系 ?? '中立' }} ({{ (person as any).好感度 ?? 0 }})</span>
             </div>
           </div>
         </template>
+        <div v-else-if="mainTab === 'relations'" class="empty-hint">暂无重要人物记录</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps<{
   active: boolean;
@@ -88,33 +92,50 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:active': [value: boolean];
-  requestDataPage: [];
+  requestQuestPage: [];
 }>();
 
-const dataTab = ref('quests');
+const mainTab = ref('quests');
+const questFilter = ref('进行中');
 const expandedItem = ref<string | null>(null);
 
-const dataTabs = [
+const mainTabs = [
   { id: 'quests', label: '任务' },
-  { id: 'stats', label: '统计' },
-  { id: 'notes', label: '笔记' },
+  { id: 'relations', label: '关系速览' },
 ];
+
+const questFilters = [
+  { id: '进行中', label: '进行中' },
+  { id: '已完成', label: '已完成' },
+  { id: '未接取', label: '未接取' },
+];
+
+const filteredQuests = computed(() => {
+  const quests = props.stat_data?.基地?.任务系统;
+  if (!quests) return null;
+  const result: Record<string, any> = {};
+  for (const [name, quest] of Object.entries(quests)) {
+    if ((quest as any).状态 === questFilter.value) {
+      result[name] = quest;
+    }
+  }
+  return result;
+});
 
 const toggleExpand = (id: string) => {
   expandedItem.value = expandedItem.value === id ? null : id;
 };
 
-// Auto-expand when a new quest arrives or first time data loads
 watch(
   () => props.stat_data?.基地?.任务系统,
   newQuests => {
     if (newQuests && Object.keys(newQuests).length > 0) {
-      emit('requestDataPage');
-      dataTab.value = 'quests';
-      // Automatically expand the first quest
-      const firstQuestKey = Object.keys(newQuests)[0];
-      expandedItem.value = 'quest_' + firstQuestKey;
+      emit('requestQuestPage');
+      questFilter.value = '进行中';
+      const activeQuest = Object.entries(newQuests).find(([, q]) => (q as any).状态 === '进行中');
+      if (activeQuest) {
+        expandedItem.value = 'quest_' + activeQuest[0];
+      }
     }
   },
   { deep: true, immediate: true },
@@ -181,6 +202,58 @@ watch(
   opacity: 1;
 }
 
+.filter-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.filter-btn {
+  color: var(--gD);
+  font-size: 12px;
+  padding: 4px 12px;
+  border: 1px solid var(--gD);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.filter-btn:hover {
+  color: var(--gd);
+  border-color: var(--gd);
+}
+.filter-btn.active {
+  color: var(--g);
+  border-color: var(--g);
+  background: rgba(139, 255, 139, 0.1);
+  text-shadow: 0 0 8px rgba(139, 255, 139, 0.6);
+}
+
+.quest-type-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid var(--gd);
+}
+.quest-type-tag.type-主线 {
+  color: #ff8b4d;
+  border-color: #ff8b4d;
+}
+.quest-type-tag.type-支线 {
+  color: #4da6ff;
+  border-color: #4da6ff;
+}
+.quest-type-tag.type-日常 {
+  color: var(--gd);
+  border-color: var(--gd);
+}
+.quest-type-tag.type-紧急 {
+  color: var(--r);
+  border-color: var(--r);
+}
+.quest-type-tag.type-委托 {
+  color: #ffcc4d;
+  border-color: #ffcc4d;
+}
+
 .scrollable {
   flex: 1;
   overflow-y: auto;
@@ -239,7 +312,8 @@ watch(
   color: var(--gd);
   font-size: 13px;
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  align-items: center;
 }
 .exp-details {
   display: grid;
@@ -271,6 +345,19 @@ watch(
   font-size: 13px;
   line-height: 1.6;
   margin-bottom: 8px;
+}
+
+.progress-bar {
+  height: 4px;
+  background: var(--gD);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--g);
+  box-shadow: 0 0 6px rgba(139, 255, 139, 0.6);
+  transition: width 0.3s var(--ease);
 }
 
 .inv-cat {
@@ -312,6 +399,18 @@ watch(
   font-size: 28px;
   font-weight: bold;
   text-shadow: 0 0 12px rgba(139, 255, 139, 0.6);
+}
+.data-sub {
+  color: var(--gd);
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.empty-hint {
+  color: var(--gD);
+  font-size: 13px;
+  text-align: center;
+  padding: 30px 0;
 }
 
 @media (max-width: 768px) {

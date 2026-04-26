@@ -15,8 +15,11 @@
             <div v-else-if="activeMenu === 'inv'" class="panel">
               <InventoryPanel :active="true" />
             </div>
-            <div v-else-if="activeMenu === 'data'" class="panel">
-              <DataPanel :active="true" :stat-data="statData" @request-data-page="activeMenu = 'data'" />
+            <div v-else-if="activeMenu === 'base'" class="panel">
+              <BasePanel :active="true" :stat-data="statData" />
+            </div>
+            <div v-else-if="activeMenu === 'quests'" class="panel">
+              <QuestPanel :active="true" :stat-data="statData" @request-quest-page="activeMenu = 'quests'" />
             </div>
             <div v-else-if="activeMenu === 'map'" class="panel">
               <MapPanel :active="true" :stat-data="statData" />
@@ -39,7 +42,8 @@ import TopBar from './components/TopBar.vue';
 import MenuNav from './components/MenuNav.vue';
 import StatusPanel from './components/StatusPanel.vue';
 import InventoryPanel from './components/InventoryPanel.vue';
-import DataPanel from './components/DataPanel.vue';
+import BasePanel from './components/BasePanel.vue';
+import QuestPanel from './components/QuestPanel.vue';
 import MapPanel from './components/MapPanel.vue';
 import RadioPanel from './components/RadioPanel.vue';
 
